@@ -9,12 +9,12 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 
-abstract class CrudRepositoryImpl<D : Dto, in T : Entity> (
+abstract class CrudRepositoryImpl<Creator, D : Dto, in T : Entity> (
     private val table: T
-) : CrudRepository<D> {
+) : CrudRepository<Creator, D> {
 
     abstract fun rowToObject(row: ResultRow) : D
-    abstract fun insert(it: InsertStatement<Number>, entity: D)
+    abstract fun insert(it: InsertStatement<Number>, entity: Creator)
     abstract fun update(it: UpdateStatement, entity: D)
 
     override suspend fun all() = dbQuery {
@@ -28,7 +28,7 @@ abstract class CrudRepositoryImpl<D : Dto, in T : Entity> (
             .singleOrNull()
     }
 
-    override suspend fun add(entity: D) = dbQuery {
+    override suspend fun add(entity: Creator) = dbQuery {
         val insertStatement = table.insert { insert(it, entity) }
         insertStatement.resultedValues?.singleOrNull()?.let(::rowToObject)
     }

@@ -1,38 +1,52 @@
 package framboos.vrolijke.jdriven.com.dao.impl
 
 import framboos.vrolijke.jdriven.com.dao.UserRepository
+import framboos.vrolijke.jdriven.com.dao.model.CreateUser
 import framboos.vrolijke.jdriven.com.dao.model.User
 import framboos.vrolijke.jdriven.com.dao.model.Users
-import org.jetbrains.exposed.sql.*
+import framboos.vrolijke.jdriven.com.utils.hashPassword
+import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
-import org.mindrot.jbcrypt.BCrypt
 
-class UserRepositoryImpl : CrudRepositoryImpl<User, Users>(Users), UserRepository {
+class UserRepositoryImpl : CrudRepositoryImpl<CreateUser, User, Users>(Users), UserRepository {
     override fun rowToObject(row: ResultRow) = User(
         id = row[Users.id],
         name = row[Users.name]
     )
 
-    override fun insert(it: InsertStatement<Number>, entity: User) {
+    override fun insert(it: InsertStatement<Number>, entity: CreateUser) {
         check(entity.password != null) { "You cannot insert a user without a password" }
 
         it[Users.name] = entity.name
-        it[Users.password] = BCrypt.hashpw(entity.password, BCrypt.gensalt())
+        it[Users.password] = hashPassword(entity.password)
     }
 
     override fun update(it: UpdateStatement, entity: User) {
         check(entity.password != null) { "You cannot update a user without a password" }
 
         it[Users.name] = entity.name
-        it[Users.password] = BCrypt.hashpw(entity.password, BCrypt.gensalt())
+        it[Users.password] = hashPassword(entity.password)
     }
 
-    override suspend fun getHashedPasswordByName(name: String) =
+    override suspend fun getByName(name: String) =
         Users
             .select { Users.name eq name }
-            .map { it[Users.password] }
+            .map(::rowToObject)
             .singleOrNull()
+
+    internal fun createAdminUser() {
+        Users.insert {
+            it[name] = "admin"
+            it[password] = hashPassword("8MumblingRastusNominee2")
+            it[admin] = true
+        }
+    }
 }
 
-val userRepo: UserRepository = UserRepositoryImpl()
+val userRepo: UserRepository = UserRepositoryImpl().apply {
+    runBlocking { if (all().isEmpty()) createAdminUser() }
+}
