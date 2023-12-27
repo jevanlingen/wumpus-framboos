@@ -17,7 +17,7 @@ import io.ktor.util.pipeline.*
 
 fun Application.configureRouting() {
     routing {
-        post("/create-account") {
+        post("create-account") {
             val createUser = call.receive<CreateUser>()
             val user = userRepo.add(createUser)
             call.respond(Created, user)
@@ -33,6 +33,7 @@ fun Application.configureRouting() {
             }
         }
 
+        // TODO: filter these endpoints away from swagger
         authenticate("admin") {
             route("users") {
                 get { call.respond(userRepo.all()) }
@@ -45,13 +46,8 @@ fun Application.configureRouting() {
             }
 
             route("games") {
-                post("{id}") { call.respondText("Get the state of game ${getId()}") }
-                get("active") { call.respondText("Get the state of the active game (shortcut for /games/active/{id}") }
-            }
-
-            get("game-state") {
-                val principal = call.principal<UserIdPrincipal>()!!
-                call.respondText("Hello ${principal.name}")
+                post("{id}/state") { call.respondText("Get the state of game ${getId()}") }
+                get("active/state") { call.respondText("Get the state of the active game (shortcut for /games/active/{id}") }
             }
         }
 
