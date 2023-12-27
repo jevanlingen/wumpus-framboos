@@ -5,4 +5,146 @@ info:
   version: "1.0.0"
 servers:
 - url: "https://backend"
-paths: {}
+paths:
+  /create-account:
+    post:
+      description: ""
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              $ref: "#/components/schemas/CreateUser"
+        required: true
+      responses:
+        "200":
+          description: ""
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/User"
+  /game-state:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+  /games:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "list of games :P..."
+  /games/{id}:
+    post:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+  /games/active:
+    get:
+      description: "{ \"grid-size\": 16, active: true }"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "get active game"
+  /games/enter/{id}:
+    post:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+  /users:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/User"
+  /users/{id}:
+    delete:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: ""
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    CreateUser:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        password:
+          type: "string"
+    User:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        password:
+          type: "string"
+        admin:
+          type: "boolean"
+        id:
+          type: "integer"
+          format: "int32"
