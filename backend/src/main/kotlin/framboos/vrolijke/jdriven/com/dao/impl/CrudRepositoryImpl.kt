@@ -3,38 +3,38 @@ package framboos.vrolijke.jdriven.com.dao.impl
 import framboos.vrolijke.jdriven.com.dao.CrudRepository
 import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.model.Dto
-import framboos.vrolijke.jdriven.com.dao.model.Entity
+import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 
-abstract class CrudRepositoryImpl<Creator, D : Dto, in T : Entity> (
-    private val table: T
+abstract class CrudRepositoryImpl<Creator, D : Dto> (
+    private val table: IntIdTable
 ) : CrudRepository<Creator, D> {
 
     abstract fun rowToObject(row: ResultRow) : D
-    abstract fun insert(it: InsertStatement<Number>, entity: Creator)
-    abstract fun update(it: UpdateStatement, entity: D)
+    abstract fun insert(it: InsertStatement<Number>, creator: Creator)
+    abstract fun update(it: UpdateStatement, dto: D)
 
     override suspend fun all() = dbQuery {
         table.selectAll().map(::rowToObject)
     }
 
-    override suspend fun getById(id: Int) = dbQuery {
+    override suspend fun findById(id: Int) = dbQuery {
         table
             .select { table.id eq id }
             .map(::rowToObject)
             .singleOrNull()
     }
 
-    override suspend fun add(entity: Creator) = dbQuery {
-        val insertStatement = table.insert { insert(it, entity) }
+    override suspend fun add(creator: Creator) = dbQuery {
+        val insertStatement = table.insert { insert(it, creator) }
         insertStatement.resultedValues?.singleOrNull()?.let(::rowToObject)
     }
 
-    override suspend fun edit(entity: D) = dbQuery {
-        table.update({ table.id eq entity.id }) { update(it, entity) } > 0
+    override suspend fun edit(dto: D) = dbQuery {
+        table.update({ table.id eq dto.id }) { update(it, dto) } > 0
     }
 
     override suspend fun delete(id: Int) = dbQuery {

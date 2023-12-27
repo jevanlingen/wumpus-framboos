@@ -18,9 +18,8 @@ import io.ktor.util.pipeline.*
 fun Application.configureRouting() {
     routing {
         post("create-account") {
-            val createUser = call.receive<CreateUser>()
-            val user = userRepo.add(createUser)
-            call.respond(Created, user)
+            userRepo.add(call.receive<CreateUser>())
+            call.respond(Created)
         }
 
         authenticate("gamers", "admin") {
@@ -37,6 +36,12 @@ fun Application.configureRouting() {
         authenticate("admin") {
             route("users") {
                 get { call.respond(userRepo.all()) }
+                get("{id}") {
+                    getId()
+                        ?.let { userRepo.findById(it) }
+                        ?.let { call.respond(it) }
+                        ?: call.respond(BadRequest)
+                }
                 delete("{id}") {
                     getId()
                         ?.let { userRepo.delete(it) }

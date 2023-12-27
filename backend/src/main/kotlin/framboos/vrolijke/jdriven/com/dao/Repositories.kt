@@ -5,12 +5,12 @@ import framboos.vrolijke.jdriven.com.dao.model.User
 
 interface CrudRepository<Creator, DTO> {
     suspend fun all(): List<DTO>
-    suspend fun getById(id: Int): DTO?
-    suspend fun add(entity: Creator): DTO?
-    suspend fun edit(entity: DTO): Boolean
+    suspend fun findById(id: Int): DTO?
+    suspend fun add(creator: Creator): DTO?
+    suspend fun edit(dto: DTO): Boolean
     suspend fun delete(id: Int): Boolean
 }
 
 interface UserRepository : CrudRepository<CreateUser, User> {
-    suspend fun getByName(name: String): User?
+    suspend fun findByName(name: String): User?
 }

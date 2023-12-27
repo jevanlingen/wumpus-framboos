@@ -22,7 +22,7 @@ private suspend fun validateUser(
     credentials: UserPasswordCredential,
     extraCheck: (User) -> Boolean = { true }
 ) =
-    userRepo.getByName(credentials.name)
+    userRepo.findByName(credentials.name)
         ?.let { checkPassword(credentials.password, it.password) && extraCheck(it) }
         ?.let { if (it) UserIdPrincipal(credentials.name) else null }
 
