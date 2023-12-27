@@ -1,5 +1,6 @@
 package framboos.vrolijke.jdriven.com.plugins
 
+import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
 import framboos.vrolijke.jdriven.com.dao.model.CreateUser
 import io.ktor.http.*
@@ -51,8 +52,13 @@ fun Application.configureRouting() {
             }
 
             route("games") {
-                post("{id}/state") { call.respondText("Get the state of game ${getId()}") }
-                get("active/state") { call.respondText("Get the state of the active game (shortcut for /games/active/{id}") }
+                get("{id}") {
+                    getId()
+                        ?.let { gameRepo.findById(it) }
+                        ?.let { call.respond(it) }
+                        ?: call.respond(BadRequest)
+                }
+                get("active") { call.respondText("Get the state of the active game (shortcut for /games/{id}") }
             }
         }
 

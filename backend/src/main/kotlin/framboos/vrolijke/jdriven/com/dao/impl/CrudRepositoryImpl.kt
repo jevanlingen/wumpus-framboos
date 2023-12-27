@@ -4,29 +4,19 @@ import framboos.vrolijke.jdriven.com.dao.CrudRepository
 import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.model.Dto
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
+import org.jetbrains.exposed.sql.update
 
 abstract class CrudRepositoryImpl<Creator, D : Dto> (
     private val table: IntIdTable
-) : CrudRepository<Creator, D> {
+) : ReadRepositoryImpl<D>(table), CrudRepository<Creator, D> {
 
-    abstract fun rowToObject(row: ResultRow) : D
     abstract fun insert(it: InsertStatement<Number>, creator: Creator)
     abstract fun update(it: UpdateStatement, dto: D)
-
-    override suspend fun all() = dbQuery {
-        table.selectAll().map(::rowToObject)
-    }
-
-    override suspend fun findById(id: Int) = dbQuery {
-        table
-            .select { table.id eq id }
-            .map(::rowToObject)
-            .singleOrNull()
-    }
 
     override suspend fun add(creator: Creator) = dbQuery {
         val insertStatement = table.insert { insert(it, creator) }
