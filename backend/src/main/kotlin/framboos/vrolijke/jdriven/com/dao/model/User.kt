@@ -8,5 +8,5 @@ data class User(override val id: Int, val name: String, val password: String? = 
 object Users : IntIdTable() {
     val name = varchar("name", 128).uniqueIndex()
     val password = varchar("password", 1024)
-    val admin = bool("admin")
+    val admin = bool("admin").default(false)
 }

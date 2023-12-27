@@ -24,7 +24,6 @@ class UserRepositoryImpl : CrudRepositoryImpl<CreateUser, User>(Users), UserRepo
 
         it[Users.name] = creator.name
         it[Users.password] = hashPassword(creator.password)
-        it[Users.admin] = false
     }
 
     override fun update(it: UpdateStatement, dto: User) {
