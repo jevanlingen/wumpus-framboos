@@ -3,6 +3,7 @@ package framboos.vrolijke.jdriven.com.dao.impl
 import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.PlayerRepository
 import framboos.vrolijke.jdriven.com.dao.model.*
+import framboos.vrolijke.jdriven.com.dao.model.Direction.EAST
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
@@ -20,7 +21,7 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
         return Player(
             id = row[Players.id].value,
             user = userName,
-            coordinate = listOf(row[Players.x], row[Players.y]),
+            coordinate = Coordinate(row[Players.x], row[Players.y]),
             direction = row[Players.direction],
             points = row[Players.points],
             arrows = row[Players.arrows],
@@ -34,7 +35,7 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
     override fun insert(it: InsertStatement<Number>, creator: CreatePlayer) {
         it[Players.userId] = creator.userId
         it[Players.gameId] = creator.gameId
-        it[Players.direction] = Direction.NORTH
+        it[Players.direction] = EAST
         it[Players.x] = 1
         it[Players.y] = 1
         it[Players.arrows] = creator.arrows
@@ -42,8 +43,8 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
     }
 
     override fun update(it: UpdateStatement, dto: Player) {
-        it[Players.x] = dto.coordinate[0]
-        it[Players.y] = dto.coordinate[1]
+        it[Players.x] = dto.coordinate.x
+        it[Players.y] = dto.coordinate.y
         it[Players.direction] = dto.direction
         it[Players.arrows] = dto.arrows
         it[Players.planks] = dto.planks

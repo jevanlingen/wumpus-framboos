@@ -15,8 +15,8 @@ class GameRepositoryImpl : ReadRepositoryImpl<Game>(Games), GameRepository {
     override fun toDto(row: ResultRow) = Game(
         id = row[Games.id].value,
         gridSize = row[Games.gridSize],
-        wumpus = Wumpus(row[Wumpusses.id].value, listOf(row[Wumpusses.x], row[Wumpusses.y])),
-        treasure = Treasure(row[Treasures.id].value, listOf(row[Treasures.x], row[Treasures.y])),
+        wumpus = Wumpus(row[Wumpusses.id].value, Coordinate(row[Wumpusses.x], row[Wumpusses.y])),
+        treasure = Treasure(row[Treasures.id].value, Coordinate(row[Treasures.x], row[Treasures.y])),
     )
 
     override suspend fun allIds(): List<Int> = dbQuery {

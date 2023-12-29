@@ -47,7 +47,7 @@ object DatabaseSingleton {
 
     // FROM https://github.com/alexroque91/wumpus-world-prolog/blob/master/worldBuilder.pl
     private suspend fun createGame() = dbQuery {
-        val id = Games.insertAndGetId { it[gridSize] = 16 }
+        val id = Games.insertAndGetId { it[gridSize] = 4 }
 
         Treasures.insert { it[x] = 2; it[y] = 3; it[gameId] = id }
         Wumpusses.insert { it[x] = 1; it[y] = 3; it[gameId] = id }

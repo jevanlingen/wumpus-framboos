@@ -4,7 +4,7 @@ enum class Direction { NORTH, EAST, SOUTH, WEST }
 enum class Perception { STENCH, BREEZE, GLITTER, BUMP, SCREAM }
 
 data class CreatePlayer(val userId: Int, val gameId: Int, val arrows: Int = 1, val planks: Int = 0)
-data class Player(override val id: Int, val user: String, val direction: Direction, val perceptions: List<Perception> = listOf(), val coordinate: List<Int>, val points: Int, val arrows: Int, val planks: Int, val wumpusAlive: Boolean, val hasTreasure: Boolean, val gameCompleted : Boolean) : Dto
+data class Player(override val id: Int, val user: String, val direction: Direction, val perceptions: List<Perception> = listOf(), val coordinate: Coordinate, val points: Int, val arrows: Int, val planks: Int, val wumpusAlive: Boolean, val hasTreasure: Boolean, val gameCompleted : Boolean) : Dto
 
 object Players : GameElement() {
     val userId = reference("user_id", Users)
