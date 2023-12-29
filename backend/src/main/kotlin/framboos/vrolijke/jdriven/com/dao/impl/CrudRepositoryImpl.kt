@@ -20,14 +20,14 @@ abstract class CrudRepositoryImpl<Creator, D : Dto> (
 
     override suspend fun add(creator: Creator) = dbQuery {
         val insertStatement = table.insert { insert(it, creator) }
-        insertStatement.resultedValues?.singleOrNull()?.let(::rowToObject)
+        insertStatement.resultedValues?.singleOrNull()?.let(::toDto)
     }
 
     override suspend fun edit(dto: D) = dbQuery {
         table.update({ table.id eq dto.id }) { update(it, dto) } > 0
     }
 
-    override suspend fun delete(id: Int) = dbQuery {
+    override suspend fun deleteById(id: Int) = dbQuery {
         table.deleteWhere { table.id eq id } > 0
     }
 }

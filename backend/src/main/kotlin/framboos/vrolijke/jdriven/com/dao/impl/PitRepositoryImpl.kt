@@ -8,15 +8,15 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 
 class PitRepositoryImpl : ReadRepositoryImpl<Pit>(Pits), PitRepository {
-    override fun rowToObject(row: ResultRow) = Pit(
+    override fun table() = Pits
+
+    override fun toDto(row: ResultRow) = Pit(
         id = row[Pits.id].value,
         coordinate = listOf(row[Pits.x], row[Pits.y])
     )
 
     override suspend fun findByGameId(gameId: Int) = dbQuery {
-        Pits
-            .select { Pits.gameId eq gameId }
-            .map(::rowToObject)
+        Pits.select { Pits.gameId eq gameId }.map(::toDto)
     }
 }
 

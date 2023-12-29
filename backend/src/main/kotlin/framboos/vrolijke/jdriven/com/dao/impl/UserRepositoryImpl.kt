@@ -12,7 +12,9 @@ import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 
 class UserRepositoryImpl : CrudRepositoryImpl<CreateUser, User>(Users), UserRepository {
-    override fun rowToObject(row: ResultRow) = User(
+    override fun table() = Users
+
+    override fun toDto(row: ResultRow) = User(
         id = row[Users.id].value,
         name = row[Users.name],
         password = row[Users.password],
@@ -36,7 +38,7 @@ class UserRepositoryImpl : CrudRepositoryImpl<CreateUser, User>(Users), UserRepo
     override suspend fun findByName(name: String) = dbQuery {
         Users
             .select { Users.name eq name }
-            .map(::rowToObject)
+            .map(::toDto)
             .singleOrNull()
     }
 }

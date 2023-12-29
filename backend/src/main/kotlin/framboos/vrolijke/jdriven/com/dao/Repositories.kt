@@ -1,9 +1,6 @@
 package framboos.vrolijke.jdriven.com.dao
 
-import framboos.vrolijke.jdriven.com.dao.model.CreateUser
-import framboos.vrolijke.jdriven.com.dao.model.Game
-import framboos.vrolijke.jdriven.com.dao.model.Pit
-import framboos.vrolijke.jdriven.com.dao.model.User
+import framboos.vrolijke.jdriven.com.dao.model.*
 
 interface ReadRepository<DTO> {
     suspend fun all(): List<DTO>
@@ -13,14 +10,20 @@ interface ReadRepository<DTO> {
 interface CrudRepository<Creator, DTO> : ReadRepository<DTO> {
     suspend fun add(creator: Creator): DTO?
     suspend fun edit(dto: DTO): Boolean
-    suspend fun delete(id: Int): Boolean
+    suspend fun deleteById(id: Int): Boolean
 }
 
 interface UserRepository : CrudRepository<CreateUser, User> {
     suspend fun findByName(name: String): User?
 }
 
-interface GameRepository : ReadRepository<Game>
+interface PlayerRepository: CrudRepository<CreatePlayer, Player> {
+    suspend fun findByGameId(gameId: Int): List<Player>
+}
+
+interface GameRepository : ReadRepository<Game> {
+    suspend fun allIds(): List<Int>
+}
 
 interface PitRepository : ReadRepository<Pit> {
     suspend fun findByGameId(gameId: Int): List<Pit>

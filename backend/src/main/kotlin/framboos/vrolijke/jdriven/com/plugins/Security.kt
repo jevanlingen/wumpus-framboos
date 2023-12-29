@@ -6,6 +6,8 @@ import framboos.vrolijke.jdriven.com.utils.checkPassword
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 
+data class UserPrincipal(val id: Int, val name: String) : Principal
+
 fun Application.configureSecurity() {
     authentication {
         basic("gamers") {
@@ -23,6 +25,5 @@ private suspend fun validateUser(
     extraCheck: (User) -> Boolean = { true }
 ) =
     userRepo.findByName(credentials.name)
-        ?.let { checkPassword(credentials.password, it.password) && extraCheck(it) }
-        ?.let { if (it) UserIdPrincipal(credentials.name) else null }
-
+        ?.takeIf { checkPassword(credentials.password, it.password) && extraCheck(it) }
+        ?.let { UserPrincipal(it.id, it.name) }
