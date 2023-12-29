@@ -3,10 +3,9 @@ package framboos.vrolijke.jdriven.com.plugins
 import framboos.vrolijke.jdriven.com.dao.CrudRepository
 import framboos.vrolijke.jdriven.com.dao.ReadRepository
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
-import framboos.vrolijke.jdriven.com.dao.impl.playerRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
-import framboos.vrolijke.jdriven.com.dao.model.CreatePlayer
 import framboos.vrolijke.jdriven.com.dao.model.CreateUser
+import framboos.vrolijke.jdriven.com.service.doGameAction
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.NoContent
@@ -28,18 +27,7 @@ fun Application.configureRouting() {
         authenticate("gamers", "admin") {
             route("games") {
                 get("ids") { call.respond(gameRepo.allIds()) }
-                post("{id}/action/{action}") {
-                    when (call.parameters["action"]) {
-                        "enter" -> createPlayer()
-                        "left-turn" -> TODO()
-                        "right-turn" -> TODO()
-                        "move-turn" -> TODO()
-                        "grab" -> TODO()
-                        "release" -> TODO()
-                        "shoot" -> TODO()
-                        else -> call.respond(BadRequest)
-                    }
-                }
+                post("{id}/action/{action}") { handleGameAction() }
             }
         }
 
@@ -60,9 +48,9 @@ fun Application.configureRouting() {
     }
 }
 
-private suspend fun PipelineContext<Unit, ApplicationCall>.createPlayer() {
+private suspend fun PipelineContext<Unit, ApplicationCall>.handleGameAction() {
     getId()
-        ?.let { playerRepo.add(CreatePlayer(userId(), it)) }
+        ?.let { doGameAction(it, call.parameters["action"], userId()) }
         ?.let { call.respond(it) }
         ?: call.respond(BadRequest)
 }

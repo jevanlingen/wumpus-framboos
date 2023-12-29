@@ -24,7 +24,8 @@ abstract class CrudRepositoryImpl<Creator, D : Dto> (
     }
 
     override suspend fun edit(dto: D) = dbQuery {
-        table.update({ table.id eq dto.id }) { update(it, dto) } > 0
+        val successful = table.update({ table.id eq dto.id }) { update(it, dto) } > 0
+        if (successful) dto else null
     }
 
     override suspend fun deleteById(id: Int) = dbQuery {

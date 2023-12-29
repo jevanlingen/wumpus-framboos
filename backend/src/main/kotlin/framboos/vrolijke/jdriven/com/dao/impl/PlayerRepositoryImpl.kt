@@ -5,6 +5,7 @@ import framboos.vrolijke.jdriven.com.dao.PlayerRepository
 import framboos.vrolijke.jdriven.com.dao.model.*
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
@@ -20,6 +21,7 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
             id = row[Players.id].value,
             user = userName,
             coordinate = listOf(row[Players.x], row[Players.y]),
+            direction = row[Players.direction],
             points = row[Players.points],
             arrows = row[Players.arrows],
             planks = row[Players.planks],
@@ -32,6 +34,7 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
     override fun insert(it: InsertStatement<Number>, creator: CreatePlayer) {
         it[Players.userId] = creator.userId
         it[Players.gameId] = creator.gameId
+        it[Players.direction] = Direction.NORTH
         it[Players.x] = 1
         it[Players.y] = 1
         it[Players.arrows] = creator.arrows
@@ -41,6 +44,7 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
     override fun update(it: UpdateStatement, dto: Player) {
         it[Players.x] = dto.coordinate[0]
         it[Players.y] = dto.coordinate[1]
+        it[Players.direction] = dto.direction
         it[Players.arrows] = dto.arrows
         it[Players.planks] = dto.planks
     }
@@ -52,6 +56,10 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
 
     override suspend fun findByGameId(gameId: Int) = dbQuery {
         table().select { Players.gameId eq gameId }.map(::toDto)
+    }
+
+    override suspend fun findByGameIdAndUserId(gameId: Int, userId: Int) = dbQuery {
+        table().select { (Players.gameId eq gameId) and (Players.userId eq userId) }.map(::toDto).singleOrNull()
     }
 }
 

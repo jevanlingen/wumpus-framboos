@@ -9,7 +9,7 @@ interface ReadRepository<DTO> {
 
 interface CrudRepository<Creator, DTO> : ReadRepository<DTO> {
     suspend fun add(creator: Creator): DTO?
-    suspend fun edit(dto: DTO): Boolean
+    suspend fun edit(dto: DTO): DTO?
     suspend fun deleteById(id: Int): Boolean
 }
 
@@ -19,6 +19,7 @@ interface UserRepository : CrudRepository<CreateUser, User> {
 
 interface PlayerRepository: CrudRepository<CreatePlayer, Player> {
     suspend fun findByGameId(gameId: Int): List<Player>
+    suspend fun findByGameIdAndUserId(gameId: Int, userId: Int): Player?
 }
 
 interface GameRepository : ReadRepository<Game> {
