@@ -1,7 +1,5 @@
 package framboos.vrolijke.jdriven.com.plugins
 
-import framboos.vrolijke.jdriven.com.dao.CrudRepository
-import framboos.vrolijke.jdriven.com.dao.ReadRepository
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
 import framboos.vrolijke.jdriven.com.dao.model.CreateUser
@@ -27,20 +25,33 @@ fun Application.configureRouting() {
         authenticate("gamers", "admin") {
             route("games") {
                 get("ids") { call.respond(gameRepo.allIds()) }
-                post("{id}/action/{action}") { handleGameAction() }
+                post("{id}/action/{action}") {
+                    val player = getId()?.let { doGameAction(it, call.parameters["action"], userId()) }
+                    if (player == null) call.respond(BadRequest) else call.respond(player)
+                }
             }
         }
 
-        // TODO: filter these endpoints away from swagger
+        // TODO: filter these endpoints away from player swagger and make another endpoint for admin swagger
         authenticate("admin") {
             route("users") {
                 get { call.respond(userRepo.all()) }
-                get("{id}") { getById(userRepo) }
-                delete("{id}") { deleteById(userRepo) }
+                get("{id}") {
+                    val user = getId()?.let { userRepo.findById(it) }
+                    if (user == null) call.respond(BadRequest) else call.respond(user)
+                }
+                delete("{id}") {
+                    getId()?.let { userRepo.deleteById(it) }
+                    call.respond(NoContent)
+                }
             }
 
             route("games") {
-                get("{id}") { getById(gameRepo) }
+                // Get the info of one game
+                get("{id}") {
+                    val game = getId()?.let { gameRepo.findById(it) }
+                    if (game == null) call.respond(BadRequest) else call.respond(game)
+                }
             }
         }
 
@@ -48,32 +59,8 @@ fun Application.configureRouting() {
     }
 }
 
-private suspend fun PipelineContext<Unit, ApplicationCall>.handleGameAction() {
-    getId()
-        ?.let { doGameAction(it, call.parameters["action"], userId()) }
-        ?.let { call.respond(it) }
-        ?: call.respond(BadRequest)
-}
-
-private suspend fun PipelineContext<Unit, ApplicationCall>.getById(repository: ReadRepository<*>) =
-    getId()
-        ?.let { repository.findById(it) }
-        ?.let { call.respond(it) }
-        ?: call.respond(BadRequest)
-
-private suspend fun PipelineContext<Unit, ApplicationCall>.deleteById(repository: CrudRepository<*, *>) =
-    getId()
-        ?.let { repository.deleteById(it) }
-        ?.let { call.respond(NoContent) }
-        ?: call.respond(BadRequest)
-
 private fun PipelineContext<Unit, ApplicationCall>.getId() =
     call.parameters["id"]?.toIntOrNull()
 
 private fun PipelineContext<Unit, ApplicationCall>.userId() =
     call.principal<UserPrincipal>()!!.id
-
-
-
-
-/**/
