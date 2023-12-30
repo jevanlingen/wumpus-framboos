@@ -22,7 +22,8 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Player? {
     }
 
     val (game, player) = retrieveData(gameId, userId)
-    if (player == null || player.death || game == null) return null
+    if (player == null || game == null) return null
+    if (player.death) return player
 
     val p = when (action) {
         "turn-left" -> turnLeft(player)
@@ -69,13 +70,14 @@ private suspend fun moveForward(player: Player, game: Game): Player? {
     }
 
     // Player walks outside grid
-    if (newCoordinate.x < 1 || newCoordinate.y < 1 || newCoordinate.x >= game.gridSize || newCoordinate.y >= game.gridSize)
+    if (newCoordinate.x < 1 || newCoordinate.y < 1 || newCoordinate.x > game.gridSize || newCoordinate.y > game.gridSize)
         return player.copy(points = player.points - 1).process()
 
     // Player encounters Wumpus OR falls in a pit
-    val eatenOrFallen = player.wumpusAlive && game.wumpus.coordinate == newCoordinate || game.pits.any { it.coordinate == newCoordinate }
+    if (player.wumpusAlive && game.wumpus.coordinate == newCoordinate || game.pits.any { it.coordinate == newCoordinate })
+        return player.copy(points = player.points - 1000, coordinate = newCoordinate, death = true).process()
 
-    return player.copy(points = player.points - 1, coordinate = newCoordinate, death = eatenOrFallen).process()
+    return player.copy(points = player.points - 1, coordinate = newCoordinate).process()
 }
 
 /**

@@ -64,9 +64,21 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
         val player = table().select { Players.userId eq creator.userId }.map(::toDto).singleOrNull()
 
         if (player == null) super.add(creator)
-        else if (player.death) edit(player.copy(coordinate = Coordinate(1, 1), wumpusAlive = true, death = false)) // start again, but keeps points
+        else if (player.death) startAgain(player, creator)
         else player
     }
+
+    private suspend fun startAgain(player: Player, creator: CreatePlayer) =
+        edit(
+            player.copy(
+                direction = EAST,
+                coordinate = Coordinate(1, 1),
+                arrows = creator.arrows,
+                planks = creator.planks,
+                wumpusAlive = true,
+                death = false
+            )
+        )
 
     override suspend fun findByGameId(gameId: Int) = dbQuery {
         table().select { Players.gameId eq gameId }.map(::toDto)
