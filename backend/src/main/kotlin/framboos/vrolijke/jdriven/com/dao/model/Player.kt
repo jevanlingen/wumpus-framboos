@@ -1,9 +1,9 @@
 package framboos.vrolijke.jdriven.com.dao.model
 
 enum class Direction { NORTH, EAST, SOUTH, WEST }
-enum class Perception { STENCH, BREEZE, GLITTER, BUMP, SCREAM }
+enum class Perception { STENCH, BREEZE, GLITTER, BUMP, SCREAM, ENTRANCE }
 
-data class CreatePlayer(val userId: Int, val gameId: Int, val points: Int = 0, val arrows: Int = 1, val planks: Int = 0)
+data class CreatePlayer(val userId: Int, val gameId: Int, val startingLocation: Coordinate, val points: Int = 0, val arrows: Int = 1, val planks: Int = 0)
 data class Player(override val id: Int, val user: String, val direction: Direction, val perceptions: List<Perception> = listOf(), val coordinate: Coordinate, val points: Int, val arrows: Int, val planks: Int, val wumpusAlive: Boolean, val hasTreasure: Boolean, val gameCompleted : Boolean, val death : Boolean) : Dto
 
 object Players : GameElement() {

@@ -17,30 +17,47 @@ The game ends if the player comes out of the cave.
 The game kind of ends when the player dies, but player can restart by `enter`ing the cave again (player keeps its current points)
  */
 suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Player? {
+    var (game, player) = retrieveData(gameId, userId)
+    if (game == null) return null
+
     if (action == "enter") {
-        return addPlayer(userId, gameId)
+        player =
+            if (player == null) addPlayer(userId, game)?.copy(perceptions = listOf(ENTRANCE))
+            else if (player.death) startAgain(player)
+            else player
     }
 
-    val (game, player) = retrieveData(gameId, userId)
-    if (player == null || game == null) return null
-    if (player.death) return player
+    if (player == null) return null
+    if (player.death || player.gameCompleted) return player
 
     val p = when (action) {
+        "enter" -> player // do nothing else
         "turn-left" -> turnLeft(player)
         "turn-right" -> turnRight(player)
         "move-forward" -> moveForward(player, game)
         "grab" -> grab(player, game)
         // "release" -> TODO() // it can release an object that it is holding; I don't see o need to implement this for now
         "shoot" -> shoot(player, game)
-        "climb" -> climb(player)
+        "climb" -> climb(player, game)
         else -> null
     }
 
     return p?.copy(perceptions = getPerceptions(action, player, p, game))
 }
 
-private suspend fun addPlayer(userId: Int, gameId: Int) =
-    playerRepo.add(CreatePlayer(userId, gameId))
+private suspend fun startAgain(player: Player) =
+    player.copy(
+        direction = EAST,
+        coordinate = Coordinate(1, 1),
+        arrows = player.arrows,
+        planks = player.planks,
+        wumpusAlive = true,
+        hasTreasure = false,
+        death = false
+    ).process()
+
+private suspend fun addPlayer(userId: Int, game: Game) =
+    playerRepo.add(CreatePlayer(userId, game.id, game.startingLocation))
 
 /**
  * The player can turn left.
@@ -110,8 +127,8 @@ private suspend fun shoot(player: Player, game: Game): Player? {
 /**
  * The player can climb out of the cave if it is at the start square and has retrieved the treasure
  */
-private suspend fun climb(player: Player) =
-    if (player.coordinate == Coordinate(1,1) && player.hasTreasure)
+private suspend fun climb(player: Player, game: Game) =
+    if (player.coordinate == game.startingLocation && player.hasTreasure)
         player.copy(points = player.points + 1000, gameCompleted = true).process()
     else
         player.copy(points = player.points - 1).process()
@@ -123,19 +140,22 @@ private fun getPerceptions(action: String?, before: Player, after: Player, game:
     val list = mutableListOf<Perception>()
 
     // The player will perceive the stench if he is in the room adjacent to the Wumpus.
-    if (areAdjacent(after.coordinate, game.wumpus.coordinate)) list.add(STENCH)
+    if (after.wumpusAlive && areAdjacent(after.coordinate, game.wumpus.coordinate)) list.add(STENCH)
 
     // The player will perceive breeze if he is in the room directly adjacent to a pit.
     if (game.pits.any { areAdjacent(after.coordinate, it.coordinate) }) list.add(BREEZE)
 
     // The player will perceive the glitter in the room where the gold is present.
-    if (after.coordinate == game.treasure.coordinate) list.add(GLITTER)
+    if (!after.hasTreasure && after.coordinate == game.treasure.coordinate) list.add(GLITTER)
 
     // The player will perceive the bump if he walks into a wall.
     if (action == "move-forward" && before.coordinate == after.coordinate) list.add(BUMP)
 
     // When the Wumpus is shot, it emits a horrible scream which can be perceived anywhere in the cave.
     if (before.wumpusAlive && !after.wumpusAlive) list.add(SCREAM)
+
+    // When player walks at the starting tile, it perceives the entrance
+    if (after.coordinate == game.startingLocation) list.add(ENTRANCE)
 
     return list.toList()
 }

@@ -37,8 +37,8 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
         it[Players.userId] = creator.userId
         it[Players.gameId] = creator.gameId
         it[Players.direction] = EAST
-        it[Players.x] = 1
-        it[Players.y] = 1
+        it[Players.x] = creator.startingLocation.x
+        it[Players.y] = creator.startingLocation.y
         it[Players.points] = creator.points
         it[Players.arrows] = creator.arrows
         it[Players.planks] = creator.planks
@@ -57,7 +57,7 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
         it[Players.death] = dto.death
     }
 
-    override suspend fun add(creator: CreatePlayer) = dbQuery {
+    /*override suspend fun add(creator: CreatePlayer) = dbQuery {
         // TODO check whether `reference("game_id", Games, onDelete = CASCADE)` already cover this
         // if (gameRepo.findById(creator.gameId) == null) throw Exception("Cannot add player to non existing game")
 
@@ -66,19 +66,7 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
         if (player == null) super.add(creator)
         else if (player.death) startAgain(player, creator)
         else player
-    }
-
-    private suspend fun startAgain(player: Player, creator: CreatePlayer) =
-        edit(
-            player.copy(
-                direction = EAST,
-                coordinate = Coordinate(1, 1),
-                arrows = creator.arrows,
-                planks = creator.planks,
-                wumpusAlive = true,
-                death = false
-            )
-        )
+    }*/
 
     override suspend fun findByGameId(gameId: Int) = dbQuery {
         table().select { Players.gameId eq gameId }.map(::toDto)
