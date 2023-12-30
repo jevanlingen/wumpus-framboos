@@ -48,8 +48,13 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
         it[Players.x] = dto.coordinate.x
         it[Players.y] = dto.coordinate.y
         it[Players.direction] = dto.direction
+        it[Players.points] = dto.points
         it[Players.arrows] = dto.arrows
         it[Players.planks] = dto.planks
+        it[Players.wumpusAlive] = dto.wumpusAlive
+        it[Players.hasTreasure] = dto.hasTreasure
+        it[Players.gameCompleted] = dto.gameCompleted
+        it[Players.death] = dto.death
     }
 
     override suspend fun add(creator: CreatePlayer) = dbQuery {
