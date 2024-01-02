@@ -12,8 +12,6 @@ import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 
 class UserRepositoryImpl : CrudRepositoryImpl<CreateUser, User>(Users), UserRepository {
-    override fun table() = Users
-
     override fun toDto(row: ResultRow) = User(
         id = row[Users.id].value,
         name = row[Users.name],

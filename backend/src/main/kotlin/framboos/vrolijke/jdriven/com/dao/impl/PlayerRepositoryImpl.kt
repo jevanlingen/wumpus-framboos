@@ -57,17 +57,6 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
         it[Players.death] = dto.death
     }
 
-    /*override suspend fun add(creator: CreatePlayer) = dbQuery {
-        // TODO check whether `reference("game_id", Games, onDelete = CASCADE)` already cover this
-        // if (gameRepo.findById(creator.gameId) == null) throw Exception("Cannot add player to non existing game")
-
-        val player = table().select { Players.userId eq creator.userId }.map(::toDto).singleOrNull()
-
-        if (player == null) super.add(creator)
-        else if (player.death) startAgain(player, creator)
-        else player
-    }*/
-
     override suspend fun findByGameId(gameId: Int) = dbQuery {
         table().select { Players.gameId eq gameId }.map(::toDto)
     }

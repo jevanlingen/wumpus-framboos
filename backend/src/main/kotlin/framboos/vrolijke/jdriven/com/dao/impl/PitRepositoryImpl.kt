@@ -9,8 +9,6 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 
 class PitRepositoryImpl : ReadRepositoryImpl<Pit>(Pits), PitRepository {
-    override fun table() = Pits
-
     override fun toDto(row: ResultRow) = Pit(
         id = row[Pits.id].value,
         coordinate = Coordinate(row[Pits.x], row[Pits.y])

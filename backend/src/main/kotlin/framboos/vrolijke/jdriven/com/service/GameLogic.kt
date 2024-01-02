@@ -22,7 +22,7 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Player? {
 
     if (action == "enter") {
         player =
-            if (player == null) addPlayer(userId, game)?.copy(perceptions = listOf(ENTRANCE))
+            if (player == null) addPlayer(userId, game)?.copy(perceptions = listOf(LADDER))
             else if (player.death) startAgain(player)
             else player
     }
@@ -155,7 +155,7 @@ private fun getPerceptions(action: String?, before: Player, after: Player, game:
     if (before.wumpusAlive && !after.wumpusAlive) list.add(SCREAM)
 
     // When player walks at the starting tile, it perceives the entrance
-    if (after.coordinate == game.startingLocation) list.add(ENTRANCE)
+    if (after.coordinate == game.startingLocation) list.add(LADDER)
 
     return list.toList()
 }

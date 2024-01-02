@@ -13,8 +13,9 @@ abstract class ReadRepositoryImpl<D : Dto> (
     private val table: IntIdTable
 ) : ReadRepository<D> {
 
-    abstract fun table() : FieldSet
     abstract fun toDto(row: ResultRow) : D
+
+    open fun table() : FieldSet = table
 
     override suspend fun all() = dbQuery {
         table().selectAll().map(::toDto)
