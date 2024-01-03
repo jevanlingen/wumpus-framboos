@@ -9,12 +9,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlin.math.abs
 
-/*
-+1000 reward points if the player comes out of the cave with the gold.
--1000 points penalty for being eaten by the Wumpus or falling into the pit.
--1 for each action, and -10 for using an arrow.
-The game ends if the player comes out of the cave.
-The game kind of ends when the player dies, but player can restart by `enter`ing the cave again (player keeps its current points)
+/**
+ * Let the player do an action at the game. Following rules apply:
+ * - Plus 1000 reward points if the player comes out of the cave with the gold.
+ * - Minus 1000 points penalty for being eaten by the Wumpus or falling into the pit.
+ * - Minus 1 point for each action, and minus 10 points for using an arrow.
+ * - The game ends if the player comes out of the cave.
+ * - The game kind of ends when the player dies, but player can restart by `enter`ing the cave again (player keeps its current points)
  */
 suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Player? {
     var (game, player) = retrieveData(gameId, userId)
@@ -22,7 +23,7 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Player? {
 
     if (action == "enter") {
         player =
-            if (player == null) addPlayer(userId, game)?.copy(perceptions = listOf(LADDER))
+            if (player == null) addPlayer(userId, game)
             else if (player.death) startAgain(player)
             else player
     }
@@ -107,7 +108,7 @@ private suspend fun grab(player: Player, game: Game) =
         player.copy(points = player.points - 1).process()
 
 /**
- * /The player has a single arrow that it can shoot.
+ * The player has a single arrow that it can shoot.
  * It will go straight in the direction faced by the player until it hits (and kills) the wumpus, or hits (and is absorbed by) a wall.
  */
 private suspend fun shoot(player: Player, game: Game): Player? {
