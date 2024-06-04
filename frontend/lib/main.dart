@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/data/provider/user_api.dart';
+
+import 'data/models/user.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,6 +59,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  List<User> _users = [];
 
   void _incrementCounter() {
     setState(() {
@@ -65,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+      _users = UserApi().getAllUsers();
     });
   }
 
@@ -106,7 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              'Logged in users:',
             ),
             Text(
               '$_counter',
