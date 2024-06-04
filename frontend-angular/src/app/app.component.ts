@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
 
     // temp for easy access
     this.getGameInformation(1);
-    this.getUserInformation(2);
+    this.getUserInformation(1);
   }
 
   createAccount() {
