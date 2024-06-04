@@ -4,11 +4,12 @@ import { Component, ElementRef, OnInit, ViewChild, WritableSignal, effect, signa
 import { RouterOutlet } from '@angular/router';
 import { Game } from '../model/game';
 import { User } from '../model/user';
+import { GameCanvasComponent } from './game-canvas/game-canvas.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, JsonPipe],
+  imports: [RouterOutlet, JsonPipe, GameCanvasComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
