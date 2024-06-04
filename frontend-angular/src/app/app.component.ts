@@ -1,10 +1,13 @@
 import { JsonPipe } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, ElementRef, OnInit, ViewChild, WritableSignal, effect, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Game } from '../model/game';
+import { GAME_ACTIONS, Game, GameAction } from '../model/game';
 import { User } from '../model/user';
 import { GameCanvasComponent } from './game-canvas/game-canvas.component';
+
+const EXAMPLE_USERNAME = 'user1';
+const EXAMPLE_PASSWORD = 'pw';
 
 @Component({
   selector: 'app-root',
@@ -14,11 +17,13 @@ import { GameCanvasComponent } from './game-canvas/game-canvas.component';
   styleUrl: './app.component.css',
 })
 export class AppComponent implements OnInit {
+
   title = 'frontend-angular';
   users: WritableSignal<Array<User>> = signal([]);
   allGames: WritableSignal<Array<number>> = signal([]);
   gameInformation: WritableSignal<Game | undefined> = signal(undefined);
   userInformation: WritableSignal<User | undefined> = signal(undefined);
+  gameActions = GAME_ACTIONS;
 
   constructor(private http: HttpClient) {
 
@@ -27,16 +32,18 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.getUsers();
     this.getGames();
+
+    // temp for easy access
     this.getGameInformation(1);
+    this.getUserInformation(2);
   }
 
   createAccount() {
-    const name = 'user 1';
-    const password = 'pw';
+
 
     this.http.post('/api/create-account', {
-      name,
-      password
+      name: EXAMPLE_USERNAME,
+      password: EXAMPLE_PASSWORD
     }).subscribe(_ => {
       this.getUsers();
     });
@@ -60,6 +67,17 @@ export class AppComponent implements OnInit {
 
   closeUserInformation() {
     this.userInformation.set(undefined);
+  }
+
+  performGameAction(gameId: number, action: GameAction) {
+    this.closeGameInformation();
+    const headers = new HttpHeaders({
+      "Authorization": `Basic ${window.btoa(EXAMPLE_USERNAME + ':' + EXAMPLE_PASSWORD)}`
+    });
+
+    this.http.post(`/api/games/${gameId}/action/${action}`, undefined, { headers })
+      .subscribe(_ => this.getGameInformation(gameId)
+    );
   }
 
   private getUsers() {

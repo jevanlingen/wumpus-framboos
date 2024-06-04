@@ -25,6 +25,7 @@ export class GameCanvasComponent implements AfterViewInit {
       this.addWumpus();
       this.addPits();
       this.addGold();
+      this.addPlayers();
     }
   }
 
@@ -74,12 +75,21 @@ export class GameCanvasComponent implements AfterViewInit {
     });
   }
 
-  mapCoordinatesToCanvasCoordinates(c: Coordinate): Coordinate{
+  addPlayers() {
+    this.game.players.forEach(p => {
+      const c = this.mapCoordinatesToCanvasCoordinates(p.coordinate);
+      this.context.font = "12px serif";
+
+      this.context.fillText(p.user + " " + p.direction, c.x, c.y);
+    })
+  }
+
+  mapCoordinatesToCanvasCoordinates(c: Coordinate): Coordinate {
     const padding = 2;
-    const {canvasHeight, boxWidth, boxHeight} = this.getCanvasProps();
+    const { canvasHeight, boxWidth, boxHeight } = this.getCanvasProps();
     return {
-      x: boxWidth * (c.x -1) + padding,
-      y: canvasHeight - (boxHeight * (c.y -1)) - padding
+      x: boxWidth * (c.x - 1) + padding,
+      y: canvasHeight - (boxHeight * (c.y - 1)) - padding
     }
   }
 }
