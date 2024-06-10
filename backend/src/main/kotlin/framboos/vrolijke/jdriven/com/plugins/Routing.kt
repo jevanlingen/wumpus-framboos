@@ -1,5 +1,6 @@
 package framboos.vrolijke.jdriven.com.plugins
 
+import framboos.vrolijke.jdriven.com.dao.impl.competitionRepo
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
 import framboos.vrolijke.jdriven.com.dao.model.CreateUser
@@ -54,10 +55,17 @@ fun Application.configureRouting() {
             }
 
             route("games") {
-                // Get the info of one game
                 get("{id}") {
                     val game = getId()?.let { gameRepo.findById(it) }
                     if (game == null) call.respond(BadRequest) else call.respond(game)
+                }
+            }
+
+            route("competitions") {
+                get("ids") { call.respond(competitionRepo.allIds()) }
+                get("{id}") {
+                    val competition = getId()?.let { competitionRepo.findById(it) }
+                    if (competition == null) call.respond(BadRequest) else call.respond(competition)
                 }
             }
         }

@@ -1,6 +1,7 @@
 package framboos.vrolijke.jdriven.com.dao.impl
 
 import framboos.vrolijke.jdriven.com.dao.CompetitionRepository
+import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.model.*
 import org.jetbrains.exposed.sql.ResultRow
 
@@ -11,10 +12,11 @@ class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions),
         games = row[Competitions.gameIds],
     )
 
-    override suspend fun allIds() =
+    override suspend fun allIds() = dbQuery {
         Competitions
             .select(Competitions.id)
             .map { it[Competitions.id].value }
+    }
 }
 
 val competitionRepo: CompetitionRepository = CompetitionRepositoryImpl()
