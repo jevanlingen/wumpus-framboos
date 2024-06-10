@@ -5,8 +5,7 @@ import framboos.vrolijke.jdriven.com.dao.PitRepository
 import framboos.vrolijke.jdriven.com.dao.model.Coordinate
 import framboos.vrolijke.jdriven.com.dao.model.Pit
 import framboos.vrolijke.jdriven.com.dao.model.Pits
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 
 class PitRepositoryImpl : ReadRepositoryImpl<Pit>(Pits), PitRepository {
     override fun toDto(row: ResultRow) = Pit(
@@ -15,7 +14,7 @@ class PitRepositoryImpl : ReadRepositoryImpl<Pit>(Pits), PitRepository {
     )
 
     override suspend fun findByGameId(gameId: Int) = dbQuery {
-        Pits.select { Pits.gameId eq gameId }.map(::toDto)
+        Pits.selectAll().where { Pits.gameId eq gameId }.map(::toDto)
     }
 }
 

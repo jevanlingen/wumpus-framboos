@@ -5,7 +5,6 @@ import framboos.vrolijke.jdriven.com.dao.GameRepository
 import framboos.vrolijke.jdriven.com.dao.model.*
 import org.jetbrains.exposed.sql.JoinType.INNER
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.selectAll
 
 class GameRepositoryImpl : ReadRepositoryImpl<Game>(Games), GameRepository {
     override fun table() =
@@ -22,8 +21,7 @@ class GameRepositoryImpl : ReadRepositoryImpl<Game>(Games), GameRepository {
 
     override suspend fun allIds(): List<Int> = dbQuery {
         Games
-            .slice(Games.id)
-            .selectAll()
+            .select(Games.id)
             .map { it[Games.id].value }
     }
 

@@ -5,9 +5,7 @@ import framboos.vrolijke.jdriven.com.dao.PlayerRepository
 import framboos.vrolijke.jdriven.com.dao.model.*
 import framboos.vrolijke.jdriven.com.dao.model.Direction.EAST
 import kotlinx.coroutines.runBlocking
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 
@@ -58,11 +56,11 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
     }
 
     override suspend fun findByGameId(gameId: Int) = dbQuery {
-        table().select { Players.gameId eq gameId }.map(::toDto)
+        table().selectAll().where { Players.gameId eq gameId }.map(::toDto)
     }
 
     override suspend fun findByGameIdAndUserId(gameId: Int, userId: Int) = dbQuery {
-        table().select { (Players.gameId eq gameId) and (Players.userId eq userId) }.map(::toDto).singleOrNull()
+        table().selectAll().where { (Players.gameId eq gameId) and (Players.userId eq userId) }.map(::toDto).singleOrNull()
     }
 }
 
