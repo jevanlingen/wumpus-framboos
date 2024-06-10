@@ -20,10 +20,7 @@ fun Application.configureSecurity() {
     }
 }
 
-private suspend fun validateUser(
-    credentials: UserPasswordCredential,
-    extraCheck: (User) -> Boolean = { true }
-) =
+private suspend fun validateUser(credentials: UserPasswordCredential, extraCheck: (User) -> Boolean = { true }) =
     userRepo.findByName(credentials.name)
         ?.takeIf { checkPassword(credentials.password, it.password) && extraCheck(it) }
         ?.let { UserPrincipal(it.id, it.name) }

@@ -8,9 +8,10 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.selectAll
 
 class GameRepositoryImpl : ReadRepositoryImpl<Game>(Games), GameRepository {
-    override fun table() = Games
-        .join(Wumpusses, INNER, onColumn = Games.id, otherColumn = Wumpusses.gameId)
-        .join(Treasures, INNER, onColumn = Games.id, otherColumn = Treasures.gameId)
+    override fun table() =
+        Games
+            .join(Wumpusses, INNER, onColumn = Games.id, otherColumn = Wumpusses.gameId)
+            .join(Treasures, INNER, onColumn = Games.id, otherColumn = Treasures.gameId)
 
     override fun toDto(row: ResultRow) = Game(
         id = row[Games.id].value,
@@ -26,9 +27,9 @@ class GameRepositoryImpl : ReadRepositoryImpl<Game>(Games), GameRepository {
             .map { it[Games.id].value }
     }
 
-        override suspend fun findById(id: Int) =
-            super.findById(id)
-                ?.copy(pits = pitRepo.findByGameId(id), players = playerRepo.findByGameId(id))
-    }
+    override suspend fun findById(id: Int) =
+        super.findById(id)
+            ?.copy(pits = pitRepo.findByGameId(id), players = playerRepo.findByGameId(id))
+}
 
 val gameRepo: GameRepository = GameRepositoryImpl()
