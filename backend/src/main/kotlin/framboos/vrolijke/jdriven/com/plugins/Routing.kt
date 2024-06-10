@@ -14,6 +14,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
+//import kotlinx.coroutines.delay
+//import kotlin.time.Duration.Companion.milliseconds
 
 fun Application.configureRouting() {
     routing {
@@ -27,7 +29,12 @@ fun Application.configureRouting() {
                 get("ids") { call.respond(gameRepo.allIds()) }
                 post("{id}/action/{action}") {
                     val player = getId()?.let { doGameAction(it, call.parameters["action"], userId()) }
-                    if (player == null) call.respond(BadRequest) else call.respond(player)
+                    if (player == null)
+                        call.respond(BadRequest)
+                    else {
+                        //delay((100..300).random().milliseconds)
+                        call.respond(player)
+                    }
                 }
             }
         }
