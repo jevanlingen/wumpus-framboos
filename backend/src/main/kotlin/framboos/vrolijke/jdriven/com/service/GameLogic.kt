@@ -50,8 +50,8 @@ private suspend fun startAgain(player: Player) =
     player.copy(
         direction = EAST,
         coordinate = Coordinate(1, 1),
-        arrows = player.arrows,
-        planks = player.planks,
+        arrows = 1,
+        planks = 0,
         wumpusAlive = true,
         hasTreasure = false,
         death = false
