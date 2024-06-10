@@ -3,7 +3,6 @@ package framboos.vrolijke.jdriven.com.dao
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
 import framboos.vrolijke.jdriven.com.dao.model.*
-import framboos.vrolijke.jdriven.com.utils.hashPassword
 import kotlinx.coroutines.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.*
@@ -18,6 +17,7 @@ object DatabaseSingleton {
         transaction(database) {
             SchemaUtils.create(Users)
             SchemaUtils.create(Games)
+            SchemaUtils.create(Competitions)
             SchemaUtils.create(Treasures)
             SchemaUtils.create(Wumpusses)
             SchemaUtils.create(Pits)
@@ -34,25 +34,13 @@ object DatabaseSingleton {
 
     private suspend fun initDefaultEntities() {
         if (userRepo.all().none { it.admin }) createAdminUser()
-        if (gameRepo.all().isEmpty()) createGame()
-    }
-
-    private suspend fun createAdminUser() = dbQuery {
-        Users.insert {
-            it[name] = "admin"
-            it[password] = hashPassword("8MumblingRastusNominee2")
-            it[admin] = true
-        }
-    }
-
-    // FROM https://github.com/alexroque91/wumpus-world-prolog/blob/master/worldBuilder.pl
-    private suspend fun createGame() = dbQuery {
-        val id = Games.insertAndGetId { it[gridSize] = 4 }
-
-        Treasures.insert { it[x] = 2; it[y] = 3; it[gameId] = id }
-        Wumpusses.insert { it[x] = 1; it[y] = 3; it[gameId] = id }
-        Pits.insert { it[x] = 3; it[y] = 1; it[gameId] = id }
-        Pits.insert { it[x] = 3; it[y] = 3; it[gameId] = id }
-        Pits.insert { it[x] = 4; it[y] = 4; it[gameId] = id }
+        if (gameRepo.all().isEmpty())
+            listOf(
+                createGame1(),
+                createGame2(),
+                createGame3(),
+                createGame4(),
+                createGame5()
+            ).also { createCompetition(it) }
     }
 }

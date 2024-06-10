@@ -29,3 +29,7 @@ interface GameRepository : ReadRepository<Game> {
 interface PitRepository : ReadRepository<Pit> {
     suspend fun findByGameId(gameId: Int): List<Pit>
 }
+
+interface CompetitionRepository : ReadRepository<Competition> {
+    suspend fun allIds(): List<Int>
+}
