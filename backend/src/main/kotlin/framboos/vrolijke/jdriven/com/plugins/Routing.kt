@@ -8,7 +8,6 @@ import framboos.vrolijke.jdriven.com.service.doGameAction
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.NoContent
-import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.http.content.*
@@ -70,7 +69,7 @@ fun Application.configureRouting() {
                 }
                 post("{id}/action/advance") {
                     getId()?.let { competitionRepo.advance(it) }
-                    call.respond(OK)
+                    call.respond(NoContent)
                 }
             }
         }
