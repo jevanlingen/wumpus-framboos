@@ -18,7 +18,8 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
 
         return Player(
             id = row[Players.id].value,
-            user = userName,
+            userId = row[Players.userId].value,
+            user = userName, // TODO change to username ??
             gameId = row[Players.gameId].value,
             coordinate = Coordinate(row[Players.x], row[Players.y]),
             direction = row[Players.direction],

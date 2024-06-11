@@ -30,6 +30,7 @@ export interface Coordinate {
 
 export interface Player {
     id: number;
+    userId: number;
     user: string;
     direction: Direction;
     perceptions: Array<Perception>;
