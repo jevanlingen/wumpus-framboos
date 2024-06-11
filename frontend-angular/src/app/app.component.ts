@@ -6,8 +6,7 @@ import { GAME_ACTIONS, Game, GameAction } from '../model/game';
 import { User } from '../model/user';
 import { GameCanvasComponent } from './game-canvas/game-canvas.component';
 
-const EXAMPLE_USERNAME = 'user1';
-const EXAMPLE_PASSWORD = 'pw';
+const SIMPLE_PASSWORD = 'pw';
 
 @Component({
   selector: 'app-root',
@@ -42,8 +41,8 @@ export class AppComponent implements OnInit {
 
 
     this.http.post('/api/create-account', {
-      name: EXAMPLE_USERNAME,
-      password: EXAMPLE_PASSWORD
+      name: `user-${(Math.random() + 1).toString(36).substring(7)}`,
+      password: SIMPLE_PASSWORD
     }).subscribe(_ => {
       this.getUsers();
     });
@@ -72,7 +71,7 @@ export class AppComponent implements OnInit {
   performGameAction(gameId: number, action: GameAction) {
     this.closeGameInformation();
     const headers = new HttpHeaders({
-      "Authorization": `Basic ${window.btoa(EXAMPLE_USERNAME + ':' + EXAMPLE_PASSWORD)}`
+      "Authorization": `Basic ${window.btoa(this.userInformation()?.name + ':' + SIMPLE_PASSWORD)}`
     });
 
     this.http.post(`/api/games/${gameId}/action/${action}`, undefined, { headers })
