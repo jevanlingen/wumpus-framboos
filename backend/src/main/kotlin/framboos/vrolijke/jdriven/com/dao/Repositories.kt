@@ -32,4 +32,5 @@ interface PitRepository : ReadRepository<Pit> {
 
 interface CompetitionRepository : ReadRepository<Competition> {
     suspend fun allIds(): List<Int>
+    suspend fun advance(id: Int): Boolean
 }
