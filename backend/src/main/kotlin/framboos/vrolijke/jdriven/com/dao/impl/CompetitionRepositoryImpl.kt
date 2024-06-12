@@ -20,15 +20,15 @@ class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions),
             .map { it[Competitions.id].value }
     }
 
-    override suspend fun findById(id: Int): Competition? {
-        val competition = super.findById(id)
-        val score = (competition?.gameIds ?: emptyList())
-            .flatMap { g -> playerRepo.findByGameId(g).map { Score(it.userId, it.user, it.points) } }
-            .groupBy { it.userId }
-            .map { (userId, scoreList) -> Score(userId, scoreList.first().username, scoreList.sumOf { it.points }) }
+    override suspend fun findByIdWithScore(id: Int) =
+        super.findById(id)?.let { competition ->
+            val score = competition.gameIds
+                .flatMap { g -> playerRepo.findByGameId(g).map { Score(it.userId, it.user, it.points) } }
+                .groupBy { it.userId }
+                .map { (userId, scoreList) -> Score(userId, scoreList.first().username, scoreList.sumOf { it.points }) }
 
-        return competition?.copy(score = score)
-    }
+            CompetitionWithScore(competition.id, competition.currentGameId, competition.gameIds, score)
+        }
 
     override suspend fun advance(id: Int) = dbQuery {
         val competition = super.findById(id) ?: return@dbQuery true
