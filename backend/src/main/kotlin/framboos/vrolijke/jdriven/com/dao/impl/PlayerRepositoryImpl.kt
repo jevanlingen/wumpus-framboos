@@ -4,21 +4,31 @@ import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.PlayerRepository
 import framboos.vrolijke.jdriven.com.dao.model.*
 import framboos.vrolijke.jdriven.com.dao.model.Direction.EAST
+import framboos.vrolijke.jdriven.com.dao.model.Users.shirtColor
+import framboos.vrolijke.jdriven.com.dao.model.Users.skinColor
+import framboos.vrolijke.jdriven.com.dao.model.Users.trouserColor
+import framboos.vrolijke.jdriven.com.utils.Color
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 
 class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), PlayerRepository {
-    override fun table() = (Players innerJoin Users).slice(Players.columns + Users.id + Users.name)
+    override fun table() = (Players innerJoin Users).slice(Players.columns + Users.id  + Users.name + shirtColor + trouserColor + skinColor)
 
     override fun toDto(row: ResultRow) =
         Player(
             id = row[Players.id].value,
-            user = User(
-                id = row[Users.id].value,
-                name = row[Users.name],
-                password = "******"
-            ),
+            // N.B. When a new player is created, the user info in not retrieved
+            user = row.getOrNull(Users.id)?.let {
+                User(
+                    id = row[Users.id].value,
+                    name = row[Users.name],
+                    password = "******",
+                    shirtColor = Color(row[shirtColor]),
+                    trouserColor = Color(row[trouserColor]),
+                    skinColor = Color(row[skinColor]),
+                )
+            },
             gameId = row[Players.gameId].value,
             coordinate = Coordinate(row[Players.x], row[Players.y]),
             direction = row[Players.direction],

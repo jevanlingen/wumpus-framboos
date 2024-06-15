@@ -5,6 +5,7 @@ import framboos.vrolijke.jdriven.com.dao.UserRepository
 import framboos.vrolijke.jdriven.com.dao.model.CreateUser
 import framboos.vrolijke.jdriven.com.dao.model.User
 import framboos.vrolijke.jdriven.com.dao.model.Users
+import framboos.vrolijke.jdriven.com.utils.Color
 import framboos.vrolijke.jdriven.com.utils.hashPassword
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
@@ -15,7 +16,10 @@ class UserRepositoryImpl : CrudRepositoryImpl<CreateUser, User>(Users), UserRepo
         id = row[Users.id].value,
         name = row[Users.name],
         password = row[Users.password],
-        admin = row[Users.admin]
+        admin = row[Users.admin],
+        shirtColor = Color(row[Users.shirtColor]),
+        trouserColor = Color(row[Users.trouserColor]),
+        skinColor = Color(row[Users.skinColor]),
     )
 
     override fun insert(it: InsertStatement<Number>, creator: CreateUser) {
@@ -23,6 +27,9 @@ class UserRepositoryImpl : CrudRepositoryImpl<CreateUser, User>(Users), UserRepo
 
         it[Users.name] = creator.name
         it[Users.password] = hashPassword(creator.password)
+        it[Users.shirtColor] = Color.random()()
+        it[Users.trouserColor] = Color.random()()
+        it[Users.skinColor] = Color.randomSkinColor()()
     }
 
     override fun update(it: UpdateStatement, dto: User) {

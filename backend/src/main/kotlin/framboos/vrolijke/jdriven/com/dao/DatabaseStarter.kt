@@ -2,6 +2,7 @@ package framboos.vrolijke.jdriven.com.dao
 
 import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.model.*
+import framboos.vrolijke.jdriven.com.utils.Color
 import framboos.vrolijke.jdriven.com.utils.hashPassword
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -11,6 +12,9 @@ internal suspend fun createAdminUser() = dbQuery {
         it[name] = "admin"
         it[password] = hashPassword("8MumblingRastusNominee2")
         it[admin] = true
+        it[shirtColor] = Color("FF3845")()
+        it[trouserColor] = Color("0036FF")()
+        it[skinColor] = Color("5B0000")()
     }
 }
 
