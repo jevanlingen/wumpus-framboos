@@ -32,12 +32,21 @@ class UserRepositoryImpl : CrudRepositoryImpl<CreateUser, User>(Users), UserRepo
         it[Users.password] = hashPassword(dto.password)
     }
 
+    override suspend fun all() =
+        super.all().map { it.withHiddenPassword() }
+
+    override suspend fun findById(id: Int) =
+        super.findById(id)?.withHiddenPassword()
+
     override suspend fun findByName(name: String) = dbQuery {
         Users
             .selectAll().where { Users.name eq name }
             .map(::toDto)
             .singleOrNull()
     }
+
+    private fun User.withHiddenPassword() =
+        copy(password = "******")
 }
 
 val userRepo: UserRepository = UserRepositoryImpl()
