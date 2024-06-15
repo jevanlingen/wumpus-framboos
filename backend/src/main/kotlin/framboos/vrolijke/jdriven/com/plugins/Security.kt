@@ -9,18 +9,20 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 
 enum class Role {
-    GAMER, ADMIN
+    GAMER, ADMIN;
+
+    operator fun invoke() = name
 }
 
 data class UserPrincipal(val id: Int, val name: String, val role: Role) : Principal
 
 fun Application.configureSecurity() {
     authentication {
-        basic(GAMER.name) {
+        basic(GAMER()) {
             validate { validateUser(it, GAMER) { user -> !user.admin } }
         }
 
-        basic(ADMIN.name) {
+        basic(ADMIN()) {
             validate { validateUser(it, ADMIN) { user -> user.admin } }
         }
     }

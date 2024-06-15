@@ -31,7 +31,7 @@ fun Application.configureRouting() {
             call.respond(Created)
         }
 
-        authenticate(GAMER.name) {
+        authenticate(GAMER()) {
             post("games/{id}/action/{action}") {
                 val player = getId()?.let { doGameAction(it, call.parameters["action"], userId()) }
                 if (player == null)
@@ -43,7 +43,7 @@ fun Application.configureRouting() {
             }
         }
 
-        authenticate(GAMER.name, ADMIN.name) {
+        authenticate(GAMER(), ADMIN()) {
             route("games") {
                 get("ids") { call.respond(gameRepo.allIds()) }
             }
@@ -61,7 +61,7 @@ fun Application.configureRouting() {
         }
 
         // TODO: filter these endpoints away from player swagger and make another endpoint for admin swagger
-        authenticate(ADMIN.name) {
+        authenticate(ADMIN()) {
             route("users") {
                 get { call.respond(userRepo.all()) }
                 get("{id}") {
