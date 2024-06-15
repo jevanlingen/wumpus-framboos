@@ -1,3 +1,5 @@
+import { User } from "./user";
+
 export interface Game {
     id: number;
     gridSize: number;
@@ -30,8 +32,7 @@ export interface Coordinate {
 
 export interface Player {
     id: number;
-    userId: number;
-    user: string;
+    user: User;
     direction: Direction;
     perceptions: Array<Perception>;
     coordinate: Coordinate;

@@ -80,7 +80,7 @@ export class GameCanvasComponent implements AfterViewInit {
       const c = this.mapCoordinatesToCanvasCoordinates(p.coordinate);
       this.context.font = "12px serif";
 
-      this.context.fillText(p.user + " " + p.direction, c.x, c.y);
+      this.context.fillText(p.user.name + " " + p.direction, c.x, c.y);
     })
   }
 

@@ -4,22 +4,21 @@ import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.PlayerRepository
 import framboos.vrolijke.jdriven.com.dao.model.*
 import framboos.vrolijke.jdriven.com.dao.model.Direction.EAST
-import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
 import org.jetbrains.exposed.sql.statements.UpdateStatement
 
 class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), PlayerRepository {
-    override fun table() = (Players innerJoin Users).slice(Players.columns + Users.name)
+    override fun table() = (Players innerJoin Users).slice(Players.columns + Users.id + Users.name)
 
-    override fun toDto(row: ResultRow): Player {
-        val userName = row.getOrNull(Users.name)
-            ?: runBlocking { userRepo.findById(row[Players.userId].value)!!.name }
-
-        return Player(
+    override fun toDto(row: ResultRow) =
+        Player(
             id = row[Players.id].value,
-            userId = row[Players.userId].value,
-            user = userName, // TODO change to username ??
+            user = User(
+                id = row[Users.id].value,
+                name = row[Users.name],
+                password = "******"
+            ),
             gameId = row[Players.gameId].value,
             coordinate = Coordinate(row[Players.x], row[Players.y]),
             direction = row[Players.direction],
@@ -31,7 +30,6 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
             gameCompleted = row[Players.gameCompleted],
             death = row[Players.death]
         )
-    }
 
     override fun insert(it: InsertStatement<Number>, creator: CreatePlayer) {
         it[Players.userId] = creator.userId
