@@ -10,6 +10,7 @@ import framboos.vrolijke.jdriven.com.service.doGameAction
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.NoContent
+import io.ktor.http.HttpStatusCode.Companion.OK
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.http.content.*
@@ -18,8 +19,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.pipeline.*
 
-//import kotlinx.coroutines.delay
-//import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
+
+private var delay = 0
 
 fun Application.configureRouting() {
     routing {
@@ -34,7 +37,7 @@ fun Application.configureRouting() {
                 if (player == null)
                     call.respond(BadRequest)
                 else {
-                    //delay((100..300).random().milliseconds)
+                    if (delay > 0) delayRequest()
                     call.respond(player)
                 }
             }
@@ -84,6 +87,13 @@ fun Application.configureRouting() {
                     call.respond(NoContent)
                 }
             }
+
+            route("admin") {
+                post("delay/{delay}") {
+                    delay = call.parameters["delay"]?.toIntOrNull() ?: return@post call.respond(BadRequest)
+                    call.respond(OK)
+                }
+            }
         }
 
         staticResources("/", "static")
@@ -98,3 +108,7 @@ private fun PipelineContext<Unit, ApplicationCall>.userId() =
 
 private fun PipelineContext<Unit, ApplicationCall>.role() =
     call.principal<UserPrincipal>()!!.role
+
+private suspend fun delayRequest() {
+    delay((maxOf(delay - 80, 0)..delay + 80).random().milliseconds)
+}
