@@ -19,7 +19,6 @@ interface UserRepository : CrudRepository<CreateUser, User> {
 
 interface PlayerRepository: CrudRepository<CreatePlayer, Player> {
     suspend fun findByGameId(gameId: Int): List<Player>
-    suspend fun findByGameIdAndUserId(gameId: Int, userId: Int): Player?
 }
 
 interface GameRepository : ReadRepository<Game> {

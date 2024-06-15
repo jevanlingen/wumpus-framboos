@@ -68,10 +68,6 @@ class PlayerRepositoryImpl : CrudRepositoryImpl<CreatePlayer, Player>(Players), 
     override suspend fun findByGameId(gameId: Int) = dbQuery {
         table().selectAll().where { Players.gameId eq gameId }.map(::toDto)
     }
-
-    override suspend fun findByGameIdAndUserId(gameId: Int, userId: Int) = dbQuery {
-        table().selectAll().where { (Players.gameId eq gameId) and (Players.userId eq userId) }.map(::toDto).singleOrNull()
-    }
 }
 
 val playerRepo: PlayerRepository = PlayerRepositoryImpl()

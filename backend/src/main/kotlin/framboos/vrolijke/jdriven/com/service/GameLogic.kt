@@ -175,7 +175,7 @@ private fun areAdjacent(point1: Coordinate, point2: Coordinate): Boolean {
 }
 
 private suspend fun retrieveData(gameId: Int, userId: Int) = coroutineScope {
-    val game = async { gameRepo.findById(gameId) }
-    val player = async { playerRepo.findByGameIdAndUserId(gameId, userId) }
-    Pair(game.await(), player.await())
+    val game = async { gameRepo.findById(gameId) }.await()
+    val player = game?.players?.find { it.user!!.id == userId }
+    Pair(game, player)
 }
