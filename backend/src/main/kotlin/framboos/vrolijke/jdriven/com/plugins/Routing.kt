@@ -29,7 +29,7 @@ fun Application.configureRouting() {
         }
 
         authenticate(GAMER.name) {
-            post("{id}/action/{action}") {
+            post("games/{id}/action/{action}") {
                 val player = getId()?.let { doGameAction(it, call.parameters["action"], userId()) }
                 if (player == null)
                     call.respond(BadRequest)
