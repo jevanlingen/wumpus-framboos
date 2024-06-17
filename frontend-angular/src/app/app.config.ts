@@ -16,7 +16,6 @@ export const appConfig: ApplicationConfig = {
 
 export function loggingInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
   if(!req.headers.has("Authorization")){
-    console.log("Add admin auth header");
     const clone = req.clone({
       headers: req.headers.set("Authorization", `Basic ${window.btoa('admin:8MumblingRastusNominee2')}`)
     });

@@ -1,19 +1,20 @@
 import { JsonPipe } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild, WritableSignal, effect, signal } from '@angular/core';
+import { Component, OnInit, WritableSignal, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { GAME_ACTIONS, Game, GameAction } from '../model/game';
 import { User } from '../model/user';
 import { GameCanvasComponent } from './game-canvas/game-canvas.component';
+import { GameGridComponent } from "./game-grid/game-grid.component";
 
 const SIMPLE_PASSWORD = 'pw';
 
 @Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [RouterOutlet, JsonPipe, GameCanvasComponent],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+    selector: 'app-root',
+    standalone: true,
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css',
+    imports: [RouterOutlet, JsonPipe, GameCanvasComponent, GameGridComponent]
 })
 export class AppComponent implements OnInit {
 
@@ -38,8 +39,6 @@ export class AppComponent implements OnInit {
   }
 
   createAccount() {
-
-
     this.http.post('/api/create-account', {
       name: `user-${(Math.random() + 1).toString(36).substring(7)}`,
       password: SIMPLE_PASSWORD
