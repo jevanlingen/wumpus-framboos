@@ -7,6 +7,7 @@ import framboos.vrolijke.jdriven.com.dao.model.CreateUser
 import framboos.vrolijke.jdriven.com.plugins.Role.ADMIN
 import framboos.vrolijke.jdriven.com.plugins.Role.GAMER
 import framboos.vrolijke.jdriven.com.service.doGameAction
+import framboos.vrolijke.jdriven.com.utils.checkPassword
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.NoContent
@@ -27,7 +28,9 @@ private var delay = 0
 fun Application.configureRouting() {
     routing {
         post("create-account") {
-            userRepo.add(call.receive<CreateUser>())
+            val newUser = call.receive<CreateUser>()
+            val existingUser = userRepo.findByName(newUser.name)
+            if (existingUser == null || !checkPassword(newUser.password, existingUser.password)) userRepo.add(newUser)
             call.respond(Created)
         }
 
