@@ -1,0 +1,23 @@
+<section class="users">
+    Users
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Score</th>
+        </tr>
+        @for (user of sortedUsers(); track user.userId) {
+        <tr>
+            <td>{{user.username}}</td>
+            <td>{{user.points}}</td>
+        </tr>
+        }
+    </table>
+</section>
+
+<section class="game">
+    Game {{competition()?.currentGameId}} / {{competition()?.gameIds?.length}} <button (click)="advance()">Advance</button>
+
+    @if(gameInformation(); as game){
+    <app-game-grid [game]="game" />
+    }
+</section>

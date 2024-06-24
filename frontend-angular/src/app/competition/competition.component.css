@@ -1,0 +1,11 @@
+:host {
+    display: flex;
+}
+
+.users{
+    flex: 1;
+}
+
+.game {
+    flex: 2;
+}

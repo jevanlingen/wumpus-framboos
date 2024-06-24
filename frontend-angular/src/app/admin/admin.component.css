@@ -1,0 +1,21 @@
+main {
+    width: 100%;
+    min-height: 100%;
+    /* display: flex; */
+    /* justify-content: center; */
+    /* align-items: center; */
+    padding: 1rem;
+    box-sizing: inherit;
+    position: relative;
+}
+
+.user,
+.game {
+    margin-left: 50px;
+}
+
+app-game-canvas {
+    min-width: 250px;
+    aspect-ratio: 1;
+    display: block;
+}
