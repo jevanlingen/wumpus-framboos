@@ -40,13 +40,13 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Play
 
     return when (action) {
         "enter" -> player // do nothing else
-        "turn-left" -> turnLeft(player)
-        "turn-right" -> turnRight(player)
-        "move-forward" -> moveForward(player, game)
-        "grab" -> grab(player, game)
+        "turn-left" -> player.turnLeft()
+        "turn-right" -> player.turnRight()
+        "move-forward" -> player.moveForward(game)
+        "grab" -> player.grab(game)
         // "release" -> TODO() // it can release an object that it is holding; I don't see o need to implement this for now
-        "shoot" -> shoot(player, game)
-        "climb" -> climb(player, game)
+        "shoot" -> player.shoot(game)
+        "climb" -> player.climb(game)
         else -> null
     }
         ?.let { success(it.copy(perceptions = getPerceptions(action, player, it, game))) }
@@ -70,76 +70,76 @@ private suspend fun addPlayer(userId: Int, game: Game) =
 /**
  * The player can turn left.
  */
-private suspend fun turnLeft(player: Player): Player? {
-    val newDirection = if (player.direction == Direction.entries.first()) Direction.entries.last() else Direction.entries[player.direction.ordinal - 1]
-    return player.copy(points = player.points - 1, direction = newDirection).process()
+private suspend fun Player.turnLeft(): Player? {
+    val newDirection = if (direction == Direction.entries.first()) Direction.entries.last() else Direction.entries[direction.ordinal - 1]
+    return copy(points = points - 1, direction = newDirection).process()
 }
 
 /**
  * The player can turn right.
  */
-private suspend fun turnRight(player: Player): Player? {
-    val newDirection = if (player.direction == Direction.entries.last()) Direction.entries.first() else Direction.entries[player.direction.ordinal + 1]
-    return player.copy(points = player.points - 1, direction = newDirection).process()
+private suspend fun Player.turnRight(): Player? {
+    val newDirection = if (direction == Direction.entries.last()) Direction.entries.first() else Direction.entries[direction.ordinal + 1]
+    return copy(points = points - 1, direction = newDirection).process()
 }
 
 /**
  * The player can go forward in the direction it is currently facing, going forward into a wall will generate a Bump perception.
  */
-private suspend fun moveForward(player: Player, game: Game): Player? {
-    val newCoordinate = when (player.direction) {
-        NORTH -> Coordinate(player.coordinate.x, player.coordinate.y + 1)
-        EAST -> Coordinate(player.coordinate.x + 1, player.coordinate.y)
-        SOUTH -> Coordinate(player.coordinate.x, player.coordinate.y - 1)
-        WEST -> Coordinate(player.coordinate.x - 1, player.coordinate.y)
+private suspend fun Player.moveForward(game: Game): Player? {
+    val newCoordinate = when (direction) {
+        NORTH -> Coordinate(coordinate.x, coordinate.y + 1)
+        EAST -> Coordinate(coordinate.x + 1, coordinate.y)
+        SOUTH -> Coordinate(coordinate.x, coordinate.y - 1)
+        WEST -> Coordinate(coordinate.x - 1, coordinate.y)
     }
 
     // Player walks outside grid
     if (newCoordinate.x < 1 || newCoordinate.y < 1 || newCoordinate.x > game.gridSize || newCoordinate.y > game.gridSize)
-        return player.copy(points = player.points - 1).process()
+        return copy(points = points - 1).process()
 
     // Player encounters Wumpus OR falls in a pit
-    if (player.wumpusAlive && game.wumpus.coordinate == newCoordinate || game.pits.any { it.coordinate == newCoordinate })
-        return player.copy(points = player.points - 300, coordinate = newCoordinate, death = true).process()
+    if (wumpusAlive && game.wumpus.coordinate == newCoordinate || game.pits.any { it.coordinate == newCoordinate })
+        return copy(points = points - 300, coordinate = newCoordinate, death = true).process()
 
-    return player.copy(points = player.points - 1, coordinate = newCoordinate).process()
+    return copy(points = points - 1, coordinate = newCoordinate).process()
 }
 
 /**
  * The player can grab a portable object at the current square.
  */
-private suspend fun grab(player: Player, game: Game) =
-    if (!player.hasTreasure && game.treasure.coordinate == player.coordinate)
-         player.copy(points = player.points - 1, hasTreasure = true).process()
+private suspend fun Player.grab(game: Game) =
+    if (!hasTreasure && game.treasure.coordinate == coordinate)
+         copy(points = points - 1, hasTreasure = true).process()
     else
-        player.copy(points = player.points - 1).process()
+        copy(points = points - 1).process()
 
 /**
  * The player has a single arrow that it can shoot.
  * It will go straight in the direction faced by the player until it hits (and kills) the wumpus, or hits (and is absorbed by) a wall.
  */
-private suspend fun shoot(player: Player, game: Game): Player? {
-    if (player.arrows < 1) return player.copy(points = player.points - 1).process()
-    if (!player.wumpusAlive) return player.copy(points = player.points - 10, arrows = player.arrows - 1).process()
+private suspend fun Player.shoot(game: Game): Player? {
+    if (arrows < 1) return copy(points = points - 1).process()
+    if (!wumpusAlive) return copy(points = points - 10, arrows = arrows - 1).process()
 
-    val hitWumpus = when (player.direction) {
-        NORTH -> player.coordinate.x == game.wumpus.coordinate.x && player.coordinate.y < game.wumpus.coordinate.y
-        EAST -> player.coordinate.x < game.wumpus.coordinate.x && player.coordinate.y == game.wumpus.coordinate.y
-        SOUTH -> player.coordinate.x == game.wumpus.coordinate.x && player.coordinate.y > game.wumpus.coordinate.y
-        WEST -> player.coordinate.x > game.wumpus.coordinate.x && player.coordinate.y == game.wumpus.coordinate.y
+    val hitWumpus = when (direction) {
+        NORTH -> coordinate.x == game.wumpus.coordinate.x && coordinate.y < game.wumpus.coordinate.y
+        EAST -> coordinate.x < game.wumpus.coordinate.x && coordinate.y == game.wumpus.coordinate.y
+        SOUTH -> coordinate.x == game.wumpus.coordinate.x && coordinate.y > game.wumpus.coordinate.y
+        WEST -> coordinate.x > game.wumpus.coordinate.x && coordinate.y == game.wumpus.coordinate.y
     }
 
-    return player.copy(points = player.points - 10, arrows = player.arrows - 1, wumpusAlive = !hitWumpus).process()
+    return copy(points = points - 10, arrows = arrows - 1, wumpusAlive = !hitWumpus).process()
 }
 
 /**
  * The player can climb out of the cave if it is at the start square and has retrieved the treasure
  */
-private suspend fun climb(player: Player, game: Game) =
-    if (player.coordinate == game.startingLocation && player.hasTreasure)
-        player.copy(points = player.points + 1000, gameCompleted = true).process()
+private suspend fun Player.climb(game: Game) =
+    if (coordinate == game.startingLocation && hasTreasure)
+        copy(points = points + 1000, gameCompleted = true).process()
     else
-        player.copy(points = player.points - 1).process()
+        copy(points = points - 1).process()
 
 private suspend fun Player.process() =
     playerRepo.edit(this)
