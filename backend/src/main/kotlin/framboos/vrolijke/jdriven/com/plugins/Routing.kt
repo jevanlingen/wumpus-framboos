@@ -36,13 +36,14 @@ fun Application.configureRouting() {
 
         authenticate(GAMER()) {
             post("games/{id}/action/{action}") {
-                val player = getId()?.let { doGameAction(it, call.parameters["action"], userId()) }
-                if (player == null)
-                    call.respond(BadRequest)
-                else {
-                    if (delay > 0) delayRequest()
-                    call.respond(player)
-                }
+                val id = getId() ?: return@post call.respond(BadRequest)
+                if (delay > 0) delayRequest()
+
+                doGameAction(id, call.parameters["action"], userId())
+                    .fold(
+                        onFailure = { call.respond(BadRequest.copy(description = it.message ?: "")) },
+                        onSuccess = { call.respond(it) }
+                    )
             }
         }
 

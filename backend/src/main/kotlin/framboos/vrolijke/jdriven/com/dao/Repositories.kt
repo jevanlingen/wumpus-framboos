@@ -32,5 +32,6 @@ interface PitRepository : ReadRepository<Pit> {
 interface CompetitionRepository : ReadRepository<Competition> {
     suspend fun allIds(): List<Int>
     suspend fun findByIdWithScore(id: Int): CompetitionWithScore?
+    suspend fun isCurrentGame(gameId: Int): Boolean
     suspend fun advance(id: Int): Boolean
 }
