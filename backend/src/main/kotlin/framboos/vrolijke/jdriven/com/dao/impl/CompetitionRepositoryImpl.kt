@@ -3,6 +3,7 @@ package framboos.vrolijke.jdriven.com.dao.impl
 import framboos.vrolijke.jdriven.com.dao.CompetitionRepository
 import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.model.*
+import framboos.vrolijke.jdriven.com.utils.exists
 import framboos.vrolijke.jdriven.com.utils.getNextOrNull
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.update
@@ -29,6 +30,10 @@ class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions),
 
             CompetitionWithScore(competition.id, competition.currentGameId, competition.gameIds, score)
         }
+
+    override suspend fun isCurrentGame(gameId: Int) = dbQuery {
+        Competitions.exists { Competitions.currentGameId eq gameId }
+    }
 
     override suspend fun advance(id: Int) = dbQuery {
         val competition = super.findById(id) ?: return@dbQuery true

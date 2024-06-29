@@ -1,12 +1,17 @@
 package framboos.vrolijke.jdriven.com.service
 
+import framboos.vrolijke.jdriven.com.dao.impl.competitionRepo
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.playerRepo
 import framboos.vrolijke.jdriven.com.dao.model.*
 import framboos.vrolijke.jdriven.com.dao.model.Direction.*
 import framboos.vrolijke.jdriven.com.dao.model.Perception.*
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import framboos.vrolijke.jdriven.com.utils.GameDoesNotExists
+import framboos.vrolijke.jdriven.com.utils.GameIsNotCurrentException
+import framboos.vrolijke.jdriven.com.utils.NotAnActionException
+import framboos.vrolijke.jdriven.com.utils.PlayerNotRegisteredException
+import kotlin.Result.Companion.failure
+import kotlin.Result.Companion.success
 import kotlin.math.abs
 
 /**
@@ -17,9 +22,11 @@ import kotlin.math.abs
  * - The game ends if the player comes out of the cave.
  * - The game kind of ends when the player dies, but player can restart by `enter`ing the cave again (player keeps its current points)
  */
-suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Player? {
+suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Player> {
     var (game, player) = retrieveData(gameId, userId)
-    if (game == null) return null
+    if (game == null) return failure(GameDoesNotExists(gameId))
+
+    if (!competitionRepo.isCurrentGame(gameId)) return failure(GameIsNotCurrentException())
 
     if (action == "enter") {
         player =
@@ -28,10 +35,10 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Player? {
             else player
     }
 
-    if (player == null) return null
-    if (player.death || player.gameCompleted) return player
+    if (player == null) return failure(PlayerNotRegisteredException())
+    if (player.death || player.gameCompleted) return success(player)
 
-    val p = when (action) {
+    return when (action) {
         "enter" -> player // do nothing else
         "turn-left" -> turnLeft(player)
         "turn-right" -> turnRight(player)
@@ -42,8 +49,8 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Player? {
         "climb" -> climb(player, game)
         else -> null
     }
-
-    return p?.copy(perceptions = getPerceptions(action, player, p, game))
+        ?.let { success(it.copy(perceptions = getPerceptions(action, player, it, game))) }
+        ?: failure(NotAnActionException(action))
 }
 
 private suspend fun startAgain(player: Player) =
@@ -174,8 +181,8 @@ private fun areAdjacent(point1: Coordinate, point2: Coordinate): Boolean {
     return (x1 == x2 && abs(y1 - y2) == 1) || (y1 == y2 && abs(x1 - x2) == 1)
 }
 
-private suspend fun retrieveData(gameId: Int, userId: Int) = coroutineScope {
-    val game = async { gameRepo.findById(gameId) }.await()
+private suspend fun retrieveData(gameId: Int, userId: Int): Pair<Game?, Player?> {
+    val game = gameRepo.findById(gameId)
     val player = game?.players?.find { it.user!!.id == userId }
-    Pair(game, player)
+    return Pair(game, player)
 }
