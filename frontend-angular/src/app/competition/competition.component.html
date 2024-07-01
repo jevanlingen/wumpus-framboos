@@ -15,7 +15,7 @@
 </section>
 
 <section class="game">
-    Game {{competition()?.currentGameId}} / {{competition()?.gameIds?.length}} <button (click)="advance()">Advance</button>
+    Game #{{competition()?.currentGameId}} ({{(competition()?.gameIds?.indexOf(competition()?.currentGameId!!) ?? -1) + 1}} / {{competition()?.gameIds?.length}}) <button (click)="advance()">Advance</button>
 
     @if(gameInformation(); as game){
     <app-game-grid [game]="game" />
