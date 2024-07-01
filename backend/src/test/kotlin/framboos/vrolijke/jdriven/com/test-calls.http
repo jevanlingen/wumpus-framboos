@@ -1,0 +1,47 @@
+### --- USER --- ###
+
+### Create user `user-xw32`
+POST http://localhost:4200/api/create-account
+Content-Type: application/json
+
+{ "name": "user-xw32","password": "pww"}
+
+### Get competitions
+GET http://localhost:4200/api/competitions/ids
+Content-Type: application/json
+Authorization: Basic user-xw32 pww
+
+### Get competitions <id>
+@competition = 1
+GET http://localhost:4200/api/competitions/{{competition}}
+Content-Type: application/json
+Authorization: Basic user-xw32 pww
+
+### Get game info
+@gameZ = 6
+GET http://localhost:4200/api/games/{{gameZ}}
+Authorization: Basic user-xw32 pww
+
+### Do action for user `user-xw32`
+@game = 6
+// Choose: enter | restart | turn-left | turn-right | move-forward | grab | shoot | climb
+@action = restart
+
+POST http://localhost:4200/api/games/{{game}}/action/{{action}}
+Content-Type: application/json
+Authorization: Basic user-xw32 pww
+
+### --- ADMIN --- ###
+
+### Get game info
+@gameX = 6
+GET http://localhost:4200/api/games/{{gameX}}
+Authorization: Basic admin 8MumblingRastusNominee2
+
+### Advance to next game
+POST http://localhost:4200/api/competitions/1/action/advance
+Authorization: Basic admin 8MumblingRastusNominee2
+
+### Set a delay for the gamer
+POST http://localhost:4200/api/admin/delay/0
+Authorization: Basic admin 8MumblingRastusNominee2

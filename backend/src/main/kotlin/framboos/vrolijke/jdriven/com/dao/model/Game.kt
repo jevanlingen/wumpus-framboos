@@ -11,6 +11,9 @@ data class Treasure(override val id: Int, val coordinate: Coordinate) : Dto
 data class Game(override val id: Int, val gridSize: Int, val pits: List<Pit> = listOf(), val wumpus: Wumpus, val treasure: Treasure, val players: List<Player> = listOf()) : Dto {
     val startingLocation get() = Coordinate(1, 1)
 }
+data class GameForPlayer(override val id: Int, val gridSize: Int, val pits: Int) : Dto {
+    val startingLocation get() = Coordinate(1, 1)
+}
 
 object Games : IntIdTable() {
     val gridSize = integer("grid_size")

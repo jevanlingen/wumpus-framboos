@@ -4,6 +4,7 @@ import framboos.vrolijke.jdriven.com.dao.impl.competitionRepo
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
 import framboos.vrolijke.jdriven.com.dao.model.CreateUser
+import framboos.vrolijke.jdriven.com.dao.model.GameForPlayer
 import framboos.vrolijke.jdriven.com.plugins.Role.ADMIN
 import framboos.vrolijke.jdriven.com.plugins.Role.GAMER
 import framboos.vrolijke.jdriven.com.service.doGameAction
@@ -49,6 +50,15 @@ fun Application.configureRouting() {
 
         authenticate(GAMER(), ADMIN()) {
             route("games") {
+                get("{id}") {
+                    val game = getId()?.let { gameRepo.findById(it) }?.let {
+                        when (role()) {
+                            GAMER -> GameForPlayer(it.id, it.gridSize, it.pits.size)
+                            ADMIN -> it
+                        }
+                    }
+                    if (game == null) call.respond(BadRequest) else call.respond(game)
+                }
                 get("ids") { call.respond(gameRepo.allIds()) }
             }
             route("competitions") {
@@ -75,13 +85,6 @@ fun Application.configureRouting() {
                 delete("{id}") {
                     getId()?.let { userRepo.deleteById(it) }
                     call.respond(NoContent)
-                }
-            }
-
-            route("games") {
-                get("{id}") {
-                    val game = getId()?.let { gameRepo.findById(it) }
-                    if (game == null) call.respond(BadRequest) else call.respond(game)
                 }
             }
 
