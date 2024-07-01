@@ -1,6 +1,7 @@
 package framboos.vrolijke.jdriven.com.dao
 
 import framboos.vrolijke.jdriven.com.dao.model.*
+import org.jetbrains.exposed.sql.statements.InsertStatement
 
 interface ReadRepository<DTO> {
     suspend fun all(): List<DTO>
@@ -22,6 +23,7 @@ interface PlayerRepository: CrudRepository<CreatePlayer, Player> {
 }
 
 interface GameRepository : ReadRepository<Game> {
+    suspend fun create(gridSize: Int, treasure: Coordinate, wumpus: Coordinate, pits: List<Coordinate>): Int
     suspend fun allIds(): List<Int>
 }
 
@@ -30,6 +32,7 @@ interface PitRepository : ReadRepository<Pit> {
 }
 
 interface CompetitionRepository : ReadRepository<Competition> {
+    suspend fun create(): InsertStatement<Number>
     suspend fun allIds(): List<Int>
     suspend fun findByIdWithScore(id: Int): CompetitionWithScore?
     suspend fun isCurrentGame(gameId: Int): Boolean

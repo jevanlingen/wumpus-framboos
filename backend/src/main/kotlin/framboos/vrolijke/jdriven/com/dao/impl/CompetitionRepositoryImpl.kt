@@ -6,6 +6,7 @@ import framboos.vrolijke.jdriven.com.dao.model.*
 import framboos.vrolijke.jdriven.com.utils.exists
 import framboos.vrolijke.jdriven.com.utils.getNextOrNull
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.update
 
 class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions), CompetitionRepository {
@@ -14,6 +15,14 @@ class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions),
         currentGameId = row[Competitions.currentGameId],
         gameIds = row[Competitions.gameIds],
     )
+
+    override suspend fun create() = dbQuery {
+        val gameIds = gameRepo.allIds().shuffled().take((3..6).random()).sorted()
+        Competitions.insert {
+            it[currentGameId] = gameIds.first()
+            it[this.gameIds] = gameIds
+        }
+    }
 
     override suspend fun allIds() = dbQuery {
         Competitions

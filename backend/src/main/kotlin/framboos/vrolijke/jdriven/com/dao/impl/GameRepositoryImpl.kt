@@ -5,6 +5,8 @@ import framboos.vrolijke.jdriven.com.dao.GameRepository
 import framboos.vrolijke.jdriven.com.dao.model.*
 import org.jetbrains.exposed.sql.JoinType.INNER
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 
 class GameRepositoryImpl : ReadRepositoryImpl<Game>(Games), GameRepository {
     override fun table() =
@@ -18,6 +20,16 @@ class GameRepositoryImpl : ReadRepositoryImpl<Game>(Games), GameRepository {
         wumpus = Wumpus(row[Wumpusses.id].value, Coordinate(row[Wumpusses.x], row[Wumpusses.y])),
         treasure = Treasure(row[Treasures.id].value, Coordinate(row[Treasures.x], row[Treasures.y])),
     )
+
+    override suspend fun create(gridSize: Int, treasure: Coordinate, wumpus: Coordinate, pits: List<Coordinate>) = dbQuery {
+        val id = Games.insertAndGetId { it[this.gridSize] = gridSize }
+
+        Treasures.insert { it[x] = treasure.x; it[y] = treasure.y; it[gameId] = id }
+        Wumpusses.insert { it[x] = wumpus.x; it[y] = wumpus.y; it[gameId] = id }
+        pits.forEach { pit -> Pits.insert { it[x] = pit.x; it[y] = pit.y; it[gameId] = id } }
+
+        id.value
+    }
 
     override suspend fun allIds(): List<Int> = dbQuery {
         Games

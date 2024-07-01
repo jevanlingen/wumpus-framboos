@@ -1,5 +1,6 @@
 package framboos.vrolijke.jdriven.com.dao
 
+import framboos.vrolijke.jdriven.com.dao.impl.competitionRepo
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
 import framboos.vrolijke.jdriven.com.dao.model.*
@@ -34,13 +35,9 @@ object DatabaseSingleton {
 
     private suspend fun initDefaultEntities() {
         if (userRepo.all().none { it.admin }) createAdminUser()
-        if (gameRepo.all().isEmpty())
-            listOf(
-                createGame1(),
-                createGame2(),
-                createGame3(),
-                createGame4(),
-                createGame5()
-            ).also { createCompetition(it) }
+        if (gameRepo.all().isEmpty()) {
+            createGames()
+            competitionRepo.create()
+        }
     }
 }

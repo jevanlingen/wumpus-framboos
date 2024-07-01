@@ -1,11 +1,12 @@
 package framboos.vrolijke.jdriven.com.dao
 
 import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
-import framboos.vrolijke.jdriven.com.dao.model.*
+import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
+import framboos.vrolijke.jdriven.com.dao.model.Users
 import framboos.vrolijke.jdriven.com.utils.Color
 import framboos.vrolijke.jdriven.com.utils.hashPassword
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
+import framboos.vrolijke.jdriven.com.dao.model.Coordinate as xy
 
 internal suspend fun createAdminUser() = dbQuery {
     Users.insert {
@@ -18,78 +19,25 @@ internal suspend fun createAdminUser() = dbQuery {
     }
 }
 
-internal suspend fun createCompetition(gameIds: List<Int>) = dbQuery {
-    Competitions.insert {
-        it[currentGameId] = gameIds.first()
-        it[this.gameIds] = gameIds
-    }
-}
+internal suspend fun createGames() = dbQuery {
+    // GridSize: 4
+    gameRepo.create(gridSize = 4, treasure = xy(2, 3), wumpus = xy(1, 3), pits = listOf(xy(3, 1), xy(3, 3), xy(4, 4)))
+    gameRepo.create(gridSize = 4, treasure = xy(3, 1), wumpus = xy(2, 2), pits = listOf(xy(3, 4), xy(4, 4)))
+    gameRepo.create(gridSize = 4, treasure = xy(4, 4), wumpus = xy(4, 3), pits = listOf(xy(3, 1), xy(3, 4)))
+    gameRepo.create(gridSize = 4, treasure = xy(2, 2), wumpus = xy(4, 3), pits = listOf(xy(3, 3), xy(3, 4)))
+    gameRepo.create(gridSize = 4, treasure = xy(4, 3), wumpus = xy(4, 1), pits = listOf(xy(1, 3), xy(4, 4)))
+    gameRepo.create(gridSize = 4, treasure = xy(3, 3), wumpus = xy(4, 1), pits = listOf(xy(3, 1), xy(1, 4)))
 
-// Games from https://github.com/alexroque91/wumpus-world-prolog/blob/master/worldBuilder.pl
-internal suspend fun createGame1() = dbQuery {
-    createGame(
-        treasure = Coordinate(2, 3),
-        wumpus = Coordinate(1, 3),
-        pits = listOf(
-            Coordinate(3, 1),
-            Coordinate(3, 3),
-            Coordinate(4, 4),
-        )
-    )
-}
+    // GridSize: 5
+    gameRepo.create(gridSize = 5, treasure = xy(4,1), wumpus = xy(5, 5), pits = listOf(xy(1, 4), xy(3, 1), xy(4, 4)))
+    gameRepo.create(gridSize = 5, treasure = xy(1,5), wumpus = xy(2, 5), pits = listOf(xy(2, 3), xy(5, 1), xy(5, 5)))
+    gameRepo.create(gridSize = 5, treasure = xy(2,5), wumpus = xy(3, 1), pits = listOf(xy(3, 3), xy(3, 4), xy(5, 3)))
+    gameRepo.create(gridSize = 5, treasure = xy(3,5), wumpus = xy(1, 3), pits = listOf(xy(4, 1), xy(4, 4), xy(5, 2)))
+    gameRepo.create(gridSize = 5, treasure = xy(5,5), wumpus = xy(1, 3), pits = listOf(xy(4, 3), xy(5, 5)))
+    gameRepo.create(gridSize = 5, treasure = xy(3,4), wumpus = xy(1, 3), pits = listOf(xy(2, 4), xy(5, 5)))
+    gameRepo.create(gridSize = 5, treasure = xy(5,1), wumpus = xy(5, 5), pits = listOf(xy(1, 3), xy(3, 5), xy(4, 1)))
 
-internal suspend fun createGame2() = dbQuery {
-    createGame(
-        treasure = Coordinate(2, 4),
-        wumpus = Coordinate(1, 2),
-        pits = listOf(Coordinate(2, 1))
-    )
-}
-
-internal suspend fun createGame3() = dbQuery {
-    createGame(
-        treasure = Coordinate(2, 1),
-        wumpus = Coordinate(3, 1),
-        pits = listOf(
-            Coordinate(1, 3),
-            Coordinate(2, 3),
-            Coordinate(2, 4),
-        )
-    )
-}
-
-internal suspend fun createGame4() = dbQuery {
-    createGame(
-        treasure = Coordinate(1, 4),
-        wumpus = Coordinate(4, 4),
-        pits = listOf(
-            Coordinate(1, 4),
-            Coordinate(2, 3),
-            Coordinate(3, 2),
-            Coordinate(4, 2),
-        )
-    )
-}
-
-internal suspend fun createGame5() = dbQuery {
-    createGame(
-        treasure = Coordinate(3, 2),
-        wumpus = Coordinate(3, 2), // extra hard, the wumpus protects the treasure
-        pits = listOf(
-            Coordinate(1, 4),
-            Coordinate(2, 2),
-            Coordinate(2, 3),
-            Coordinate(4, 4),
-        )
-    )
-}
-
-private suspend fun createGame(treasure: Coordinate, wumpus: Coordinate, pits: List<Coordinate>) = dbQuery {
-    val id = Games.insertAndGetId { it[gridSize] = 4 }
-
-    Treasures.insert { it[x] = treasure.x; it[y] = treasure.y; it[gameId] = id }
-    Wumpusses.insert { it[x] = wumpus.x; it[y] = wumpus.y; it[gameId] = id }
-    pits.forEach { pit -> Pits.insert { it[x] = pit.x; it[y] = pit.y; it[gameId] = id } }
-
-    id.value
+    // GridSize: 6
+    gameRepo.create(gridSize = 6, treasure = xy(2,6), wumpus = xy(5, 1), pits = listOf(xy(2, 3), xy(4, 4)))
+    gameRepo.create(gridSize = 6, treasure = xy(4,5), wumpus = xy(3, 1), pits = listOf(xy(3, 5), xy(4, 6), xy(6, 3)))
 }
