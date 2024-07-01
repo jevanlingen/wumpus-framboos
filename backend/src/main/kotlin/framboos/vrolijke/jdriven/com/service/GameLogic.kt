@@ -29,17 +29,15 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Play
     if (!competitionRepo.isCurrentGame(gameId)) return failure(GameIsNotCurrentException())
 
     if (action == "enter") {
-        player =
-            if (player == null) addPlayer(userId, game)
-            else if (player.death) startAgain(player)
-            else player
+        player = player ?: addPlayer(userId, game)
     }
 
     if (player == null) return failure(PlayerNotRegisteredException())
+    if (action == "restart") startAgain(player)
     if (player.death || player.gameCompleted) return success(player)
 
     return when (action) {
-        "enter" -> player // do nothing else
+        "enter", "restart" -> player // do nothing else
         "turn-left" -> player.turnLeft()
         "turn-right" -> player.turnRight()
         "move-forward" -> player.moveForward(game)
