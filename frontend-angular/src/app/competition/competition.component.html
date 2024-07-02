@@ -1,21 +1,32 @@
 <section class="users">
-    Users
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Score</th>
-        </tr>
-        @for (user of sortedUsers(); track user.userId) {
-        <tr>
-            <td>{{user.username}}</td>
-            <td>{{user.points}}</td>
-        </tr>
-        }
+    <h3>Players</h3>
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (user of sortedUsers(); track user.id; let idx = $index) {
+            <tr>
+                <td>{{idx + 1}}</td>
+                <td>{{user.name}}</td>
+                <td>{{user.points}}</td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="3">No users in game</td>
+            </tr>
+            }
+        </tbody>
     </table>
 </section>
 
 <section class="game">
-    Game #{{competition()?.currentGameId}} ({{(competition()?.gameIds?.indexOf(competition()?.currentGameId!!) ?? -1) + 1}} / {{competition()?.gameIds?.length}}) <button (click)="advance()">Advance</button>
+    <h3>Game #{{competition()?.currentGameId}} ({{(competition()?.gameIds?.indexOf(competition()?.currentGameId!!) ?? -1) +
+    1}} / {{competition()?.gameIds?.length}}) <button (click)="advance()">Advance</button></h3>
 
     @if(gameInformation(); as game){
     <app-game-grid [game]="game" />

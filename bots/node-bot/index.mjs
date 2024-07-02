@@ -1,15 +1,16 @@
-import { doGameAction, getCompetition, getCompetitionIds, getGameIds, register } from "./scripts/api.mjs";
+import { doGameAction, getCompetition, getCompetitionIds, getGame, getGameIds, register } from "./scripts/api.mjs";
 
 
 // type Perception = 'LADDER' | 'STENCH' | 'BREEZE' | 'GLITTER' | 'BUMP' | 'SCREAM';
-// const GAME_ACTIONS = ['enter', 'turn-left', 'turn-right', 'move-forward', 'grab', 'shoot', 'climb'];
+// const GAME_ACTIONS = ['enter', 'turn-left', 'turn-right', 'move-forward', 'grab', 'shoot', 'climb', 'restart'];
 async function playGame(gameId) {
-    // would be nice to first get the game instead of doing an action.
+
+    const gameInfo = await getGame(gameId);    
     // would be nice if you call start that it should restart at 1,1.
 
     //knowledge base
     const kb = {
-        gridSize: 4, // assuming
+        gridSize: gameInfo.gridSize,
         visited: [],
         pits: [],
         notPits: ['1,1'],
@@ -77,6 +78,7 @@ async function playGame(gameId) {
 
             if (nextActions.length == 0) {
                 throw 'No next actions found, but game not overrr.....';
+                // TODO maybe kill wumpus when known and move to wumpus field
             }
 
             actions.push(...nextActions);

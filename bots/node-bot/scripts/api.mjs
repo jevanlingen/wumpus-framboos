@@ -6,6 +6,11 @@ export async function getGameIds() {
   return await responseData.body.json();
 }
 
+export async function getGame(gameId){
+  let responseData = await request(`${config.apiUrl}/games/${gameId}`, { headers: { ...getHeaders() } });
+  return await responseData.body.json();
+}
+
 export async function doGameAction(gameId, action){
   let responseData = await request(`${config.apiUrl}/games/${gameId}/action/${action}`, { method: 'POST', headers: { ...getHeaders() } });
   return await responseData.body.json();
