@@ -9,6 +9,9 @@ import framboos.vrolijke.jdriven.com.plugins.Role.ADMIN
 import framboos.vrolijke.jdriven.com.plugins.Role.GAMER
 import framboos.vrolijke.jdriven.com.service.doGameAction
 import framboos.vrolijke.jdriven.com.utils.checkPassword
+import framboos.vrolijke.jdriven.com.utils.deleteX
+import framboos.vrolijke.jdriven.com.utils.getX
+import framboos.vrolijke.jdriven.com.utils.postX
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.http.HttpStatusCode.Companion.NoContent
@@ -77,27 +80,27 @@ fun Application.configureRouting() {
         // TODO: filter these endpoints away from player swagger and make another endpoint for admin swagger
         authenticate(ADMIN()) {
             route("users") {
-                get { call.respond(userRepo.all()) }
-                get("{id}") {
+                getX { call.respond(userRepo.all()) }
+                getX("{id}") {
                     val user = getId()?.let { userRepo.findById(it) }
                     if (user == null) call.respond(BadRequest) else call.respond(user)
                 }
-                delete("{id}") {
+                deleteX("{id}") {
                     getId()?.let { userRepo.deleteById(it) }
                     call.respond(NoContent)
                 }
             }
 
             route("competitions") {
-                post("{id}/action/advance") {
+                postX("{id}/action/advance") {
                     getId()?.let { competitionRepo.advance(it) }
                     call.respond(NoContent)
                 }
             }
 
             route("admin") {
-                post("delay/{delay}") {
-                    delay = call.parameters["delay"]?.toIntOrNull() ?: return@post call.respond(BadRequest)
+                postX("delay/{delay}") {
+                    delay = call.parameters["delay"]?.toIntOrNull() ?: return@postX call.respond(BadRequest)
                     call.respond(OK)
                 }
             }
