@@ -33,9 +33,9 @@ class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions),
     override suspend fun findByIdWithScore(id: Int) =
         super.findById(id)?.let { competition ->
             val score = competition.gameIds
-                .flatMap { g -> playerRepo.findByGameId(g).map { Score(it.user!!.id, it.user.name, it.points) } }
+                .flatMap { g -> playerRepo.findByGameId(g).map { Score(it.user!!.id, it.user.name, it.user.trouserColor, it.user.skinColor, it.points) } }
                 .groupBy { it.userId }
-                .map { (userId, scoreList) -> Score(userId, scoreList.first().username, scoreList.sumOf { it.points }) }
+                .map { (userId, scoreList) -> Score(userId, scoreList[0].username, scoreList[0].trouserColor, scoreList[0].skinColor, scoreList.sumOf { it.points }) }
 
             CompetitionWithScore(competition.id, competition.currentGameId, competition.gameIds, score)
         }
