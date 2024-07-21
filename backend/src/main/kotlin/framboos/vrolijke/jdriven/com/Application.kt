@@ -17,4 +17,5 @@ fun Application.module() {
     configureHTTP()
     configureSerialization()
     configureRouting()
+    configureAdminRouting()
 }

@@ -1,4 +1,4 @@
-openapi: "3.0.3"
+openapi: "3.1.0"
 info:
   title: "backend API"
   description: "backend API"
@@ -6,12 +6,41 @@ info:
 servers:
 - url: "https://backend"
 paths:
+  /competitions/{id}:
+    get:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Competition"
+  /competitions/ids:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  type: "integer"
+                  format: "int32"
   /create-account:
     post:
       description: ""
       requestBody:
         content:
-          '*/*':
+          application/json:
             schema:
               $ref: "#/components/schemas/CreateUser"
         required: true
@@ -24,7 +53,7 @@ paths:
                 type: "object"
   /games/{id}:
     get:
-      description: "Get the info of one game"
+      description: ""
       parameters:
       - name: "id"
         in: "path"
@@ -72,27 +101,9 @@ paths:
                 items:
                   type: "integer"
                   format: "int32"
-  /users:
-    get:
+  /competitions:
+    post:
       description: ""
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/User"
-  /users/{id}:
-    delete:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
       responses:
         "200":
           description: ""
@@ -100,23 +111,24 @@ paths:
             '*/*':
               schema:
                 type: "object"
-    get:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/User"
 components:
   schemas:
+    Competition:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        currentGameId:
+          type: "integer"
+          format: "int32"
+        gameIds:
+          type: "array"
+          items:
+            type: "integer"
+            format: "int32"
+      required:
+      - "gameIds"
     CreateUser:
       type: "object"
       properties:
@@ -124,6 +136,43 @@ components:
           type: "string"
         password:
           type: "string"
+      required:
+      - "name"
+    Game:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        gridSize:
+          type: "integer"
+          format: "int32"
+        pits:
+          type: "integer"
+          format: "int32"
+    User:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+        password:
+          type: "string"
+        admin:
+          type: "boolean"
+        shirtColor:
+          type: "string"
+        trouserColor:
+          type: "string"
+        skinColor:
+          type: "string"
+      required:
+      - "name"
+      - "shirtColor"
+      - "trouserColor"
+      - "skinColor"
     Coordinate:
       type: "object"
       properties:
@@ -133,30 +182,6 @@ components:
         "y":
           type: "integer"
           format: "int32"
-    Pit:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          format: "int32"
-        coordinate:
-          $ref: "#/components/schemas/Coordinate"
-    Wumpus:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          format: "int32"
-        coordinate:
-          $ref: "#/components/schemas/Coordinate"
-    Treasure:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          format: "int32"
-        coordinate:
-          $ref: "#/components/schemas/Coordinate"
     Player:
       type: "object"
       properties:
@@ -164,7 +189,10 @@ components:
           type: "integer"
           format: "int32"
         user:
-          type: "string"
+          $ref: "#/components/schemas/User"
+        gameId:
+          type: "integer"
+          format: "int32"
         direction:
           type: "string"
           enum:
@@ -182,6 +210,7 @@ components:
             - "GLITTER"
             - "BUMP"
             - "SCREAM"
+            - "LADDER"
         coordinate:
           $ref: "#/components/schemas/Coordinate"
         points:
@@ -201,36 +230,7 @@ components:
           type: "boolean"
         death:
           type: "boolean"
-    Game:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          format: "int32"
-        gridSize:
-          type: "integer"
-          format: "int32"
-        pits:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/Pit"
-        wumpus:
-          $ref: "#/components/schemas/Wumpus"
-        treasure:
-          $ref: "#/components/schemas/Treasure"
-        players:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/Player"
-    User:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          format: "int32"
-        name:
-          type: "string"
-        password:
-          type: "string"
-        admin:
-          type: "boolean"
+      required:
+      - "direction"
+      - "perceptions"
+      - "coordinate"
