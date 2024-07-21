@@ -18,10 +18,6 @@ paths:
       responses:
         "201":
           description: "The new user account has been created."
-          content:
-            '*/*':
-              schema:
-                type: "object"
   /competitions/{id}:
     get:
       tags:
