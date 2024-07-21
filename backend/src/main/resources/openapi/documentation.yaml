@@ -1,43 +1,14 @@
 openapi: "3.1.0"
 info:
-  title: "backend API"
-  description: "backend API"
+  title: "Wumpus Game"
+  description: "API to interact with the Wumpus World."
   version: "1.0.0"
-servers:
-- url: "https://backend"
 paths:
-  /competitions/{id}:
-    get:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Competition"
-  /competitions/ids:
-    get:
-      description: ""
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  type: "integer"
-                  format: "int32"
   /create-account:
     post:
-      description: ""
+      tags:
+        - Account
+      description: "Create a new user account."
       requestBody:
         content:
           application/json:
@@ -45,55 +16,104 @@ paths:
               $ref: "#/components/schemas/CreateUser"
         required: true
       responses:
-        "200":
-          description: ""
+        "201":
+          description: "The new user account has been created."
           content:
             '*/*':
               schema:
                 type: "object"
-  /games/{id}:
+  /competitions/{id}:
     get:
-      description: ""
+      tags:
+        - Competitions
+      security:
+        - basicAuth: []
+      description: "Retrieve details of a specific competition by its ID."
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "200":
-          description: "OK"
+          description: "Details of the competition."
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Competition"
+  /competitions/ids:
+    get:
+      tags:
+        - Competitions
+      security:
+        - basicAuth: []
+      description: "Retrieve a list of all competition IDs."
+      responses:
+        "200":
+          description: "A list of competition IDs."
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  type: "integer"
+                  format: "int32"
+  /games/{id}:
+    get:
+      tags:
+        - Games
+      security:
+        - basicAuth: []
+      description: "Retrieve details of a specific game by its ID."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "Details of the game."
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/Game"
   /games/{id}/action/{action}:
     post:
-      description: ""
+      tags:
+        - Games
+      security:
+        - basicAuth: []
+      description: "Perform an action in a specific game."
       parameters:
-      - name: "action"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        - name: "action"
+          in: "path"
+          required: true
+          schema:
+            $ref: '#/components/schemas/Action'
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
         "200":
-          description: "OK"
+          description: "Action performed successfully."
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/Player"
   /games/ids:
     get:
-      description: ""
+      tags:
+        - Games
+      security:
+        - basicAuth: []
+      description: "Retrieve a list of all game IDs."
       responses:
         "200":
-          description: "OK"
+          description: "A list of game IDs."
           content:
             '*/*':
               schema:
@@ -103,16 +123,35 @@ paths:
                   format: "int32"
   /competitions:
     post:
-      description: ""
+      tags:
+        - Competitions
+      security:
+        - basicAuth: []
+      description: "Create a new competition."
       responses:
         "200":
-          description: ""
+          description: "The new competition has been created."
           content:
             '*/*':
               schema:
                 type: "object"
 components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
   schemas:
+    Action:
+      type: string
+      enum:
+        - enter
+        - restart
+        - turn-left
+        - turn-right
+        - move-forward
+        - grab
+        - shoot
+        - climb
     Competition:
       type: "object"
       properties:
@@ -128,7 +167,7 @@ components:
             type: "integer"
             format: "int32"
       required:
-      - "gameIds"
+        - "gameIds"
     CreateUser:
       type: "object"
       properties:
@@ -137,7 +176,7 @@ components:
         password:
           type: "string"
       required:
-      - "name"
+        - "name"
     Game:
       type: "object"
       properties:
@@ -169,10 +208,10 @@ components:
         skinColor:
           type: "string"
       required:
-      - "name"
-      - "shirtColor"
-      - "trouserColor"
-      - "skinColor"
+        - "name"
+        - "shirtColor"
+        - "trouserColor"
+        - "skinColor"
     Coordinate:
       type: "object"
       properties:
@@ -196,21 +235,21 @@ components:
         direction:
           type: "string"
           enum:
-          - "NORTH"
-          - "EAST"
-          - "SOUTH"
-          - "WEST"
+            - "NORTH"
+            - "EAST"
+            - "SOUTH"
+            - "WEST"
         perceptions:
           type: "array"
           items:
             type: "string"
             enum:
-            - "STENCH"
-            - "BREEZE"
-            - "GLITTER"
-            - "BUMP"
-            - "SCREAM"
-            - "LADDER"
+              - "STENCH"
+              - "BREEZE"
+              - "GLITTER"
+              - "BUMP"
+              - "SCREAM"
+              - "LADDER"
         coordinate:
           $ref: "#/components/schemas/Coordinate"
         points:
@@ -231,6 +270,6 @@ components:
         death:
           type: "boolean"
       required:
-      - "direction"
-      - "perceptions"
-      - "coordinate"
+        - "direction"
+        - "perceptions"
+        - "coordinate"
