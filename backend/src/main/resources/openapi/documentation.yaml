@@ -117,20 +117,6 @@ paths:
                 items:
                   type: "integer"
                   format: "int32"
-  /competitions:
-    post:
-      tags:
-        - Competitions
-      security:
-        - basicAuth: []
-      description: "Create a new competition."
-      responses:
-        "200":
-          description: "The new competition has been created."
-          content:
-            '*/*':
-              schema:
-                type: "object"
 components:
   securitySchemes:
     basicAuth:
