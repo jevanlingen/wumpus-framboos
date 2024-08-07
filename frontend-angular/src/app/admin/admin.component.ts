@@ -8,13 +8,14 @@ import { JsonPipe } from '@angular/common';
 const SIMPLE_PASSWORD = 'pw';
 
 @Component({
-    selector: 'app-admin',
-    standalone: true,
-    templateUrl: './admin.component.html',
-    styleUrl: './admin.component.css',
-    imports: [GameGridComponent, JsonPipe]
+  selector: 'app-admin',
+  standalone: true,
+  templateUrl: './admin.component.html',
+  styleUrl: './admin.component.css',
+  imports: [GameGridComponent, JsonPipe]
 })
 export class AdminComponent {
+
 
   title = 'frontend-angular';
   users: WritableSignal<Array<User>> = signal([]);
@@ -73,6 +74,16 @@ export class AdminComponent {
 
     this.http.post(`/api/games/${gameId}/action/${action}`, undefined, { headers })
       .subscribe(_ => this.getGameInformation(gameId)
+      );
+  }
+
+  updateDelay(val: number) {
+    this.http.post(`/api/admin/delay/${val}`, null).subscribe(
+      _ => alert('Delay updated'),
+      err => {
+        console.error(err);
+        alert('Error setting delay ' + err);
+      }
     );
   }
 

@@ -1,41 +1,43 @@
 <main class="main">
-    <div class="users">
-      <h2>Users</h2>
-      <ul>
-        @for (user of users(); track user.id) {
-        <li><a (click)="getUserInformation(user.id)">{{user.name}}</a>
-        </li>
-        }
-      </ul>
-      <button (click)="createAccount()">Create new User</button>
-  
-      @if (userInformation(); as user) {
-      <div class="user">
-        <h3>User {{user.name}} <button (click)="closeUserInformation()">X</button></h3>
-        {{user | json}}
-  
-        <h5>Game 1 actions</h5>
-        @for (action of gameActions; track action) {
-          <button (click)="performGameAction(1, action)">{{action}}</button>
-        }
-      </div>
+  <div class="settings">
+    <h2>Delay</h2>
+    <input type="number" value="0" min="0" #delay/> <button (click)="updateDelay(delay.valueAsNumber)">Update delay</button>
+  </div>
+
+  <div class="users">
+    <h2>Users</h2>
+    <ul>
+      @for (user of users(); track user.id) {
+      <li><a (click)="getUserInformation(user.id)">{{user.name}}</a>
+      </li>
+      }
+    </ul>
+    <button (click)="createAccount()">Create new User</button>
+
+    @if (userInformation(); as user) {
+    <div class="user">
+      <h3>User {{user.name}} <button (click)="closeUserInformation()">X</button></h3>
+      {{user | json}}
+
+      <h5>Game 1 actions</h5>
+      @for (action of gameActions; track action) {
+      <button (click)="performGameAction(1, action)">{{action}}</button>
       }
     </div>
-    <div class="games">
-      <h2>All games</h2>
-      <ul>
-        @for (game of allGames(); track game) {
-        <li><a (click)="getGameInformation(game)">{{game}}</a></li>
-        }
-      </ul>
-      @if (gameInformation(); as game) {
-      <div class="game">
-        <h3>Game {{game.id}} <button (click)="closeGameInformation()">X</button></h3>
-        <!-- <app-game-canvas [game]="game" /> -->
-  
-        <app-game-grid [game]="game"/>
-      </div>
-      }
+    }
+  </div>
+  <div class="games">
+    <h2>All games</h2>
+    @for (game of allGames(); track game) {
+    <button (click)="getGameInformation(game)">{{game}}</button>
+    }
+    @if (gameInformation(); as game) {
+    <div class="game">
+      <h3>Game {{game.id}} <button (click)="closeGameInformation()">X</button></h3>
+      <!-- <app-game-canvas [game]="game" /> -->
+
+      <app-game-grid [game]="game" />
     </div>
-  </main>
-  
+    }
+  </div>
+</main>
