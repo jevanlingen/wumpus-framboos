@@ -1,21 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, DestroyRef, OnDestroy, OnInit, WritableSignal, computed, effect, inject, signal } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { User } from '../../model/user';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { Game } from '../../model/game';
 import { GameGridComponent } from "../game-grid/game-grid.component";
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subscription, concatMap, withLatestFrom } from 'rxjs';
-import { UserService } from '../service/user.service';
-
-interface UserWithScore extends User {
-  points: number;
-}
 
 interface Score {
   points: number;
   userId: any;
   username: string;
+  skinColor: string;
+  trouserColor: string;
 }
 
 interface Competition {
@@ -37,13 +33,13 @@ export class CompetitionComponent implements OnInit, OnDestroy {
   http = inject(HttpClient);
   route = inject(ActivatedRoute);
   destroyRef = inject(DestroyRef);
-  userService = inject(UserService);
-  private refreshRate = 5000;
+  private refreshRate = 150;
 
   competition: WritableSignal<Competition | undefined> = signal(undefined);
   currentGameId = computed(() => this.competition()?.currentGameId);
-  sortedUsers: WritableSignal<UserWithScore[]> = signal([]);
+  sortedScores: WritableSignal<Score[]> = signal([]);
   gameInformation: WritableSignal<Game | undefined> = signal(undefined);
+  isFinished = false;
   private competitionId!: any;
   private competitionTimeout?: any;
   private gameTimeout?: any;
@@ -52,7 +48,6 @@ export class CompetitionComponent implements OnInit, OnDestroy {
 
   constructor() {
     effect(() => {
-      console.log('Current game id', this.currentGameId());
       if (this.currentGameId()) {
         this.getGame(this.currentGameId());
       }
@@ -70,48 +65,48 @@ export class CompetitionComponent implements OnInit, OnDestroy {
   }
 
   advance() {
-    this.http
-      .post(`/api/competitions/${this.competitionId}/action/advance`, {})
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(_ => {
-        this.getCompetition();
-      });
+    if (this.isFinalGame) {
+      this.isFinished = true;
+    } else {
+      this.http
+        .post(`/api/competitions/${this.competitionId}/action/advance`, {})
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(_ => {
+          this.getCompetition();
+        });
+    }
+  }
+
+  get currentGameNumber(): number {
+    return (this.competition()?.gameIds?.indexOf(this.competition()?.currentGameId!!) ?? -1) + 1;
+  }
+
+  get numberOfGames(): number {
+    return this.competition()?.gameIds?.length ?? Infinity;
+  }
+
+  get isFinalGame(): boolean {
+    return this.currentGameNumber === this.numberOfGames;
   }
 
   private getCompetition() {
     this.stopCompetitionRefresh();
     this.competitionSub = this.http
       .get<Competition>(`/api/competitions/${this.competitionId}`)
-      .pipe(withLatestFrom(this.userService.users$))
-      .subscribe(([competition, allUsers]) => {
+      .subscribe((competition) => {
         this.competition.set(competition);
-        this.updateUsers(allUsers, competition.score);
+        this.sortedScores.set(competition.score.sort((a, b) => b.points - a.points));
         this.competitionTimeout = setTimeout(() => this.getCompetition(), this.refreshRate);
       });
   }
 
-  private updateUsers(allUsers: User[], scores: Score[]) {
-    const usersWithScore = allUsers
-      .map(u => ({
-        ...u,
-        points: scores.find(s => s.userId === u.id)?.points ?? -Infinity
-      }))
-      .filter(u => u.points !== -Infinity)
-      .sort((a, b) => b.points - a.points);
-
-    this.sortedUsers.set(usersWithScore);
-  }
-
   private getGame(id: any) {
     this.stopGameRefresh();
-    console.log('get Game', id);
 
     this.gameSub = this.http
       .get<Game>(`/api/games/${id}`)
       .subscribe((gameInformation) => {
         this.gameInformation.set(gameInformation);
-        console.log('set timeout', id);
-
         this.gameTimeout = setTimeout(() => this.getGame(id), this.refreshRate);
       });
   }

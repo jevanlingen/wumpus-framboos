@@ -1,19 +1,30 @@
-<section class="users">
+<section class="users" [class.finished]="isFinished">
     <h3>Players</h3>
     <table class="user-table">
         <thead>
             <tr>
                 <th>#</th>
                 <th>Name</th>
+                <th>Avatar</th>
                 <th>Score</th>
             </tr>
         </thead>
         <tbody>
-            @for (user of sortedUsers(); track user.id; let idx = $index) {
+            @for (score of sortedScores(); track score.username; let idx = $index) {
             <tr>
                 <td>{{idx + 1}}</td>
-                <td>{{user.name}}</td>
-                <td>{{user.points}}</td>
+                <td>{{score.username}}</td>
+                <td>
+                    <svg width="25" height="25" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="50" cy="50" rx="40" ry="20" [attr.fill]="'#' + score.trouserColor"
+                            stroke="black" stroke-width="2" />
+                        <circle cx="50" cy="25" r="5" [attr.fill]="'#' + score.skinColor" stroke="black"
+                            stroke-width="1" />
+                        <circle cx="50" cy="50" r="25" [attr.fill]="'#' + score.skinColor" stroke="black"
+                            stroke-width="1" />
+                    </svg>
+                </td>
+                <td>{{score.points}}</td>
             </tr>
             } @empty {
             <tr>
@@ -24,11 +35,14 @@
     </table>
 </section>
 
+@if (!isFinished) {
 <section class="game">
-    <h3>Game #{{competition()?.currentGameId}} ({{(competition()?.gameIds?.indexOf(competition()?.currentGameId!!) ?? -1) +
-    1}} / {{competition()?.gameIds?.length}}) <button (click)="advance()">Advance</button></h3>
+    <h3>Game #{{competition()?.currentGameId}} ({{currentGameNumber
+        }} / {{numberOfGames}}) <button (click)="advance()">{{isFinalGame ? 'Finish' :
+            'Advance'}}</button></h3>
 
     @if(gameInformation(); as game){
     <app-game-grid [game]="game" />
     }
 </section>
+}
