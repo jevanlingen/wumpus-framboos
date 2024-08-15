@@ -61,14 +61,21 @@ class WumpusApi(
         )
 
     private fun parsePlayer(data: Map<String, Any?>): Player {
-        val userMap = data["user"] as Map<String, Any?>
+        val userMap = if (data["user"] == null) null else data["user"] as Map<String, Any?>
         val coordinateMap = data["coordinate"] as Map<String, Any?>
 
         return Player(
             id = data["id"].toString().toInt(),
-            user = parseUser(userMap),
+            user = userMap?.let { parseUser(it) },
             gameId = data["gameId"].toString().toInt(),
-            direction = data["direction"].toString(),
+            direction =
+                when (data["direction"].toString()) {
+                    "NORTH" -> Direction.NORTH
+                    "EAST" -> Direction.EAST
+                    "SOUTH" -> Direction.SOUTH
+                    "WEST" -> Direction.WEST
+                    else -> error("Cannot happen")
+                },
             perceptions = (data["perceptions"] as List<*>).map { it.toString() },
             coordinate = parseCoordinate(coordinateMap),
             points = data["points"].toString().toInt(),

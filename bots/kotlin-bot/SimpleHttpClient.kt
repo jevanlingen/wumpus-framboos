@@ -1,10 +1,11 @@
 import HttpMethod.GET
 import HttpMethod.POST
-import java.io.DataOutputStream
-import java.net.HttpURLConnection
-import java.net.HttpURLConnection.HTTP_CREATED
-import java.net.HttpURLConnection.HTTP_OK
-import java.net.URL
+import java.net.URI
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpRequest.BodyPublishers.noBody
+import java.net.http.HttpRequest.BodyPublishers.ofString
+import java.net.http.HttpResponse
 
 enum class HttpMethod {
     GET,
@@ -31,22 +32,27 @@ class SimpleHttpClient {
         body: String?,
         authHeader: String?,
     ): String? {
-        val connection =
-            (URL(url).openConnection() as HttpURLConnection).apply {
-                requestMethod = method.name
-                setRequestProperty("Content-Type", "application/json")
-                authHeader?.let { setRequestProperty("Authorization", it) }
-                body?.let {
-                    doOutput = true
-                    DataOutputStream(outputStream).use { stream -> stream.writeBytes(it) }
-                }
-            }
+        if (body == null) println("${method.name}: $url") else println("${method.name}: $url\n$body")
 
-        val responseCode = connection.responseCode
-        return if (responseCode == HTTP_OK || responseCode == HTTP_CREATED) {
-            connection.inputStream.bufferedReader().use { it.readText() }
-        } else {
-            connection.errorStream?.bufferedReader()?.use { it.readText() }
+        val requestBuilder =
+            HttpRequest
+                .newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/json")
+
+        when (method) {
+            GET -> requestBuilder.GET()
+            POST -> requestBuilder.POST(if (body == null) noBody() else ofString(body))
+            else -> TODO()
         }
+
+        authHeader?.let { requestBuilder.header("Authorization", it) }
+
+        val request = requestBuilder.build()
+        val response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString())
+
+        println("${response.statusCode()} - ${response.body()}\n")
+
+        return response.body()
     }
 }
