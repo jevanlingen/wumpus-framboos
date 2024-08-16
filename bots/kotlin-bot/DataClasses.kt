@@ -17,9 +17,9 @@ data class Game(
 
 data class Player(
     val id: Int,
-    val user: User,
+    val user: User?,
     val gameId: Int,
-    val direction: String,
+    val direction: Direction,
     val perceptions: List<String>,
     val coordinate: Coordinate,
     val points: Int,
@@ -45,3 +45,10 @@ data class Coordinate(
     val x: Int,
     val y: Int,
 )
+
+enum class Direction {
+    NORTH,
+    EAST,
+    SOUTH,
+    WEST,
+}
