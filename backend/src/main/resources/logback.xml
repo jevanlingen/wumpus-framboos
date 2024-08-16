@@ -4,6 +4,10 @@
             <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
+    <!-- Set to DEBUG to see SQL logs -->
+    <logger name="Exposed" level="info" additivity="false">
+        <appender-ref ref="STDOUT"/>
+    </logger>
     <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>
