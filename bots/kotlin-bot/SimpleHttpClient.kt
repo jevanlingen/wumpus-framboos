@@ -19,20 +19,24 @@ class SimpleHttpClient {
         url: String,
         body: String?,
         authHeader: String? = null,
-    ) = request(POST, url, body, authHeader)
+        username: String? = null,
+    ) = request(POST, url, body, authHeader, username)
 
     fun get(
         url: String,
         authHeader: String? = null,
-    ) = request(GET, url, null, authHeader)
+        username: String? = null,
+    ) = request(GET, url, null, authHeader, username)
 
     private fun request(
         method: HttpMethod,
         url: String,
         body: String?,
         authHeader: String?,
+        username: String?,
     ): String? {
-        if (body == null) println("${method.name}: $url") else println("${method.name}: $url\n$body")
+        println("$username | ${method.name}: $url")
+        // if (body == null) println("$username | ${method.name}: $url") else println("$username | ${method.name}: $url\n$body")
 
         val requestBuilder =
             HttpRequest
@@ -51,7 +55,7 @@ class SimpleHttpClient {
         val request = requestBuilder.build()
         val response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString())
 
-        println("${response.statusCode()} - ${response.body()}\n")
+        // println("${response.statusCode()} - ${response.body()}\n")
 
         return response.body()
     }

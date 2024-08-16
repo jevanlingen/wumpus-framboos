@@ -4,6 +4,7 @@ class WumpusApi(
     private val baseUrl: String,
 ) {
     private val client = SimpleHttpClient()
+    private var username: String? = null
     private var authHeader: String? = null
 
     fun createAccount(
@@ -15,6 +16,7 @@ class WumpusApi(
 
         if (response != null) {
             val auth = Base64.getEncoder().encodeToString("$username:$password".toByteArray())
+            this.username = username
             authHeader = "Basic $auth"
             return true
         }
@@ -22,17 +24,17 @@ class WumpusApi(
     }
 
     fun getCompetitions(): List<Int>? {
-        val response = client.get("$baseUrl/competitions/ids", authHeader)
+        val response = client.get("$baseUrl/competitions/ids", authHeader, username)
         return response?.let { parseJsonArray(it).map { it.toString().toInt() } }
     }
 
     fun getCompetition(id: Int): Competition? {
-        val response = client.get("$baseUrl/competitions/$id", authHeader)
+        val response = client.get("$baseUrl/competitions/$id", authHeader, username)
         return response?.let { parseCompetition(parseJsonObject(it)) }
     }
 
     fun getGame(id: Int): Game? {
-        val response = client.get("$baseUrl/games/$id", authHeader)
+        val response = client.get("$baseUrl/games/$id", authHeader, username)
         return response?.let { parseGame(parseJsonObject(it)) }
     }
 
@@ -40,7 +42,7 @@ class WumpusApi(
         gameId: Int,
         action: String,
     ): Player? {
-        val response = client.post("$baseUrl/games/$gameId/action/$action", null, authHeader)
+        val response = client.post("$baseUrl/games/$gameId/action/$action", null, authHeader, username)
         return response?.let { parsePlayer(parseJsonObject(it)) }
     }
 
