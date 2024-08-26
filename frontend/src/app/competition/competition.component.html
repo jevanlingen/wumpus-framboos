@@ -7,16 +7,26 @@
                 <th>Name</th>
                 <th>Avatar</th>
                 <th>Score</th>
+                <th>Total</th>
             </tr>
         </thead>
         <tbody>
-            @for (score of sortedScores(); track score.username; let idx = $index) {
+            @for (score of sortedScores(); track score.username; let idx = $index;) {
             <tr>
                 <td>{{idx + 1}}</td>
                 <td>{{score.username}}</td>
-                <td>
+                <td style="display: flex; vertical-align: top;">
                     <app-avatar [trouserColor]="score.trouserColor" [skinColor]="score.skinColor" />
+                    
+                    @if(getGameUserState(score.userId)?.gameCompleted){
+                    ✅
+                    } @else if (getGameUserState(score.userId)?.death) {
+                    ☠️
+                    } @else if (getGameUserState(score.userId)?.hasTreasure){
+                    <app-treasure style="height: 20px;" />
+                    }
                 </td>
+                <td>{{getGameUserState(score.userId)?.points}}</td>
                 <td>{{score.points}}</td>
             </tr>
             } @empty {

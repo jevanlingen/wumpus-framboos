@@ -3,9 +3,10 @@ import { Component, DestroyRef, OnDestroy, OnInit, WritableSignal, computed, eff
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Game } from '../../model/game';
-import { GameGridComponent } from "../game-grid/game-grid.component";
+import { Game, Player } from '../../model/game';
 import { AvatarComponent } from "../avatar/avatar.component";
+import { GameGridComponent } from "../game-grid/game-grid.component";
+import { TreasureComponent } from '../game-grid/treasure/treasure.component';
 
 interface Score {
   points: number;
@@ -27,7 +28,7 @@ interface Competition {
   standalone: true,
   templateUrl: './competition.component.html',
   styleUrl: './competition.component.css',
-  imports: [GameGridComponent, AvatarComponent]
+  imports: [GameGridComponent, AvatarComponent, TreasureComponent]
 })
 export class CompetitionComponent implements OnInit, OnDestroy {
 
@@ -88,6 +89,10 @@ export class CompetitionComponent implements OnInit, OnDestroy {
 
   get isFinalGame(): boolean {
     return this.currentGameNumber === this.numberOfGames;
+  }
+
+  getGameUserState(userId: number): Player | undefined {
+    return this.gameInformation()?.players.find(p => p.user.id === userId);
   }
 
   private getCompetition() {
