@@ -34,8 +34,6 @@
     @if (gameInformation(); as game) {
     <div class="game">
       <h3>Game {{game.id}} <button (click)="closeGameInformation()">X</button></h3>
-      <!-- <app-game-canvas [game]="game" /> -->
-
       <app-game-grid [game]="game" />
     </div>
     }

@@ -15,9 +15,6 @@ const SIMPLE_PASSWORD = 'pw';
   imports: [GameGridComponent, JsonPipe]
 })
 export class AdminComponent {
-
-
-  title = 'frontend-angular';
   users: WritableSignal<Array<User>> = signal([]);
   allGames: WritableSignal<Array<number>> = signal([]);
   gameInformation: WritableSignal<Game | undefined> = signal(undefined);
