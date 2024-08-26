@@ -1,5 +1,12 @@
-:host{
+:host {
     display: block;
     width: 50vw;
     height: 50vw;
+}
+
+.grid {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    background: #333;
 }
