@@ -4,9 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-pit',
   standalone: true,
   imports: [],
-  template: `<span
-                style="height: 100%; width: 100%; background-color: black; border-radius: 50%; display: inline-block;">
-                </span>`,
+  template: `<img width="100%" height="70%" style="margin-top: 15%;" src="pit.png" />`,
   styleUrl: './pit.component.css'
 })
 export class PitComponent {
