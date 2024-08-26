@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Game } from '../../model/game';
 import { GameGridComponent } from "../game-grid/game-grid.component";
+import { AvatarComponent } from "../avatar/avatar.component";
 
 interface Score {
   points: number;
@@ -26,7 +27,7 @@ interface Competition {
   standalone: true,
   templateUrl: './competition.component.html',
   styleUrl: './competition.component.css',
-  imports: [GameGridComponent]
+  imports: [GameGridComponent, AvatarComponent]
 })
 export class CompetitionComponent implements OnInit, OnDestroy {
 

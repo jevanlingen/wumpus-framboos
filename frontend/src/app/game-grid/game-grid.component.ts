@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Coordinate, Game, Player } from './../../model/game';
+import { AvatarComponent } from "../avatar/avatar.component";
 
 function sameCoordinate(c1: Coordinate, c2: Coordinate) {
   return c1.x === c2.x && c1.y === c2.y;
@@ -8,7 +9,7 @@ function sameCoordinate(c1: Coordinate, c2: Coordinate) {
 @Component({
   selector: 'app-game-grid',
   standalone: true,
-  imports: [],
+  imports: [AvatarComponent],
   templateUrl: './game-grid.component.html',
   styleUrl: './game-grid.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush
