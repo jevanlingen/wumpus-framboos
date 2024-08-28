@@ -38,4 +38,9 @@ internal suspend fun createGames() = dbQuery {
     // GridSize: 6
     gameRepo.create(name = "M", gridSize = 6, treasure = xy(2,6), wumpus = xy(5, 1), pits = listOf(xy(2, 3), xy(4, 4)))
     gameRepo.create(name = "N", gridSize = 6, treasure = xy(4,5), wumpus = xy(3, 1), pits = listOf(xy(3, 5), xy(4, 6), xy(6, 3)))
+
+    // TODO more games here, just for the 'real' competition
+    /*
+    gameRepo.create( .. )
+     */
 }
