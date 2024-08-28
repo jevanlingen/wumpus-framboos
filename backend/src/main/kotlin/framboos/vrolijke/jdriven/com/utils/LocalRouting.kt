@@ -43,5 +43,5 @@ fun Route.deleteX(path: String, body: suspend PipelineContext<Unit, ApplicationC
 private suspend inline fun PipelineContext<Unit, ApplicationCall>.handle(body: suspend PipelineContext<Unit, ApplicationCall>.(Unit) -> Unit) =
     if (call.isLocal()) body(Unit) else call.respond(NotFound)
 
-private fun ApplicationCall.isLocal() =
+fun ApplicationCall.isLocal() =
     request.origin.remoteHost == "localhost" || request.origin.remoteHost == "127.0.0.1"

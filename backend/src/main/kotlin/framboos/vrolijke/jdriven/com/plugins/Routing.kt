@@ -9,6 +9,7 @@ import framboos.vrolijke.jdriven.com.plugins.Role.ADMIN
 import framboos.vrolijke.jdriven.com.plugins.Role.GAMER
 import framboos.vrolijke.jdriven.com.service.doGameAction
 import framboos.vrolijke.jdriven.com.utils.checkPassword
+import framboos.vrolijke.jdriven.com.utils.isLocal
 import io.ktor.http.HttpStatusCode.Companion.BadRequest
 import io.ktor.http.HttpStatusCode.Companion.Created
 import io.ktor.server.application.*
@@ -49,9 +50,9 @@ fun Application.configureRouting() {
             route("games") {
                 get("{id}") {
                     val game = getId()?.let { gameRepo.findById(it) }?.let {
-                        when (role()) {
-                            GAMER -> GameForPlayer(it.id, it.gridSize, it.pits.size)
-                            ADMIN -> it
+                        when {
+                            role() == ADMIN && call.isLocal() -> it
+                            else -> GameForPlayer(it.id, it.gridSize, it.pits.size)
                         }
                     }
                     if (game == null) call.respond(BadRequest) else call.respond(game)
@@ -61,9 +62,9 @@ fun Application.configureRouting() {
             route("competitions") {
                 get("{id}") {
                     val competition =
-                        when (role()) {
-                            GAMER -> getId()?.let { competitionRepo.findById(it) }
-                            ADMIN -> getId()?.let { competitionRepo.findByIdWithScore(it) }
+                        when {
+                            role() == ADMIN && call.isLocal() -> getId()?.let { competitionRepo.findByIdWithScore(it) }
+                            else -> getId()?.let { competitionRepo.findById(it) }
                         }
                     if (competition == null) call.respond(BadRequest) else call.respond(competition)
                 }

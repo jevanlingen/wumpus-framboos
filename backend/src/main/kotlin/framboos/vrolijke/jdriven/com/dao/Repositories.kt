@@ -23,7 +23,7 @@ interface PlayerRepository: CrudRepository<CreatePlayer, Player> {
 }
 
 interface GameRepository : ReadRepository<Game> {
-    suspend fun create(gridSize: Int, treasure: Coordinate, wumpus: Coordinate, pits: List<Coordinate>): Int
+    suspend fun create(name: String, gridSize: Int, treasure: Coordinate, wumpus: Coordinate, pits: List<Coordinate>): Int
     suspend fun allIds(): List<Int>
 }
 

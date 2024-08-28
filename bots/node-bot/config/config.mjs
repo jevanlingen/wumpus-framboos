@@ -1,7 +1,7 @@
 export const config = {
   username: 'BaconBot4',
   password: 'bacon1234',
-  apiUrl: 'http://localhost:8080',
+  apiUrl: 'http://localhost:80',
   contentTypeHeaders: {
     "content-type": "application/json"
   },

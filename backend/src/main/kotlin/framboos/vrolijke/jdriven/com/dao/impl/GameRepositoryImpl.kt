@@ -16,13 +16,14 @@ class GameRepositoryImpl : ReadRepositoryImpl<Game>(Games), GameRepository {
 
     override fun toDto(row: ResultRow) = Game(
         id = row[Games.id].value,
+        name = row[Games.name],
         gridSize = row[Games.gridSize],
         wumpus = Wumpus(row[Wumpusses.id].value, Coordinate(row[Wumpusses.x], row[Wumpusses.y])),
         treasure = Treasure(row[Treasures.id].value, Coordinate(row[Treasures.x], row[Treasures.y])),
     )
 
-    override suspend fun create(gridSize: Int, treasure: Coordinate, wumpus: Coordinate, pits: List<Coordinate>) = dbQuery {
-        val id = Games.insertAndGetId { it[this.gridSize] = gridSize }
+    override suspend fun create(name: String, gridSize: Int, treasure: Coordinate, wumpus: Coordinate, pits: List<Coordinate>) = dbQuery {
+        val id = Games.insertAndGetId { it[this.name] = name; it[this.gridSize] = gridSize }
 
         Treasures.insert { it[x] = treasure.x; it[y] = treasure.y; it[gameId] = id }
         Wumpusses.insert { it[x] = wumpus.x; it[y] = wumpus.y; it[gameId] = id }

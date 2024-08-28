@@ -2,6 +2,7 @@ import { User } from "./user";
 
 export interface Game {
     id: number;
+    name: string;
     gridSize: number;
     pits: Array<Pit>;
     wumpus: Wumpus;

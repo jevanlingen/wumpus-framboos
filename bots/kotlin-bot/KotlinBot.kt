@@ -1,4 +1,4 @@
-const val BACKEND = "http://0.0.0.0:8080"
+const val BACKEND = "http://0.0.0.0:80"
 const val AMOUNT_OF_BOTS = 5 // Don't set this to high, otherwise you will get OOM errors
 
 fun main() {
