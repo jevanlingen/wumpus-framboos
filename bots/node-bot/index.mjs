@@ -71,12 +71,13 @@ async function playGame(gameId) {
                     console.log('found gold', currentField);
                     nextActions = ['grab'];
                 } else {
-                    console.log('next goal', `${currentField} -> ${kb.notVisitedOKFields[0]}`, kb.okFields);
+                    console.log('next goal', `${currentField} -> ${kb.notVisitedOKFields[0]}`, kb.okFields, kb.notVisitedOKFields);
                     nextActions = nextActions.concat(getActionsToGetToField(currentField, state.direction, kb.notVisitedOKFields[0], kb.okFields));
                 }
             }
 
             if (nextActions.length == 0) {
+                console.log('No next actions found, but game not overrr.....');
                 throw 'No next actions found, but game not overrr.....';
                 // TODO maybe kill wumpus when known and move to wumpus field
             }

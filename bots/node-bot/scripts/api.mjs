@@ -12,8 +12,11 @@ export async function getGame(gameId){
 }
 
 export async function doGameAction(gameId, action){
+  console.log('doGameAction', gameId, action);
+  
   let responseData = await request(`${config.apiUrl}/games/${gameId}/action/${action}`, { method: 'POST', headers: { ...getHeaders() } });
-  return await responseData.body.json();
+  const json = await responseData.body.json()
+  return json;
 }
 
 export async function getCompetitionIds() {
