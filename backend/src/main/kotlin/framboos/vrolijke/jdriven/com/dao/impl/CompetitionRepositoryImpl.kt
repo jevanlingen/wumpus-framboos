@@ -17,7 +17,7 @@ class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions),
     )
 
     override suspend fun create() = dbQuery {
-        val gameIds = gameRepo.allIds().shuffled().take((3..6).random()).sorted()
+        val gameIds = gameRepo.allIds()//.shuffled().take((3..6).random()).sorted()
         Competitions.insert {
             it[currentGameId] = gameIds.first()
             it[this.gameIds] = gameIds

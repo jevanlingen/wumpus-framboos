@@ -17,7 +17,7 @@
                 <td>{{score.username}}</td>
                 <td style="display: flex; vertical-align: top;">
                     <app-avatar [trouserColor]="score.trouserColor" [skinColor]="score.skinColor" />
-                    
+
                     @if(getGameUserState(score.userId)?.gameCompleted){
                     ✅
                     } @else if (getGameUserState(score.userId)?.death) {
@@ -45,6 +45,7 @@
             'Advance'}}</button></h3>
 
     @if(gameInformation(); as game){
+      >> Use game: {{game.name}}
     <app-game-grid [game]="game" />
     }
 </section>
