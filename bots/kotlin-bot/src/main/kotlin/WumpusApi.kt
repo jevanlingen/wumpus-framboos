@@ -71,13 +71,13 @@ class WumpusApi(
             user = userMap?.let { parseUser(it) },
             gameId = data["gameId"].toString().toInt(),
             direction =
-                when (data["direction"].toString()) {
-                    "NORTH" -> Direction.NORTH
-                    "EAST" -> Direction.EAST
-                    "SOUTH" -> Direction.SOUTH
-                    "WEST" -> Direction.WEST
-                    else -> error("Cannot happen")
-                },
+            when (data["direction"].toString()) {
+                "NORTH" -> Direction.NORTH
+                "EAST" -> Direction.EAST
+                "SOUTH" -> Direction.SOUTH
+                "WEST" -> Direction.WEST
+                else -> error("Cannot happen")
+            },
             perceptions = (data["perceptions"] as List<*>).map { it.toString() },
             coordinate = parseCoordinate(coordinateMap),
             points = data["points"].toString().toInt(),

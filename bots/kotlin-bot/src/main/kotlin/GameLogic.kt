@@ -79,14 +79,14 @@ class WumpusGame(
         val to = move.direction
         return when {
             (direction == NORTH && to == EAST) ||
-                (direction == EAST && to == SOUTH) ||
-                (direction == SOUTH && to == WEST) ||
-                (direction == WEST && to == NORTH) -> turnRight()?.let { moveForward() }
+                    (direction == EAST && to == SOUTH) ||
+                    (direction == SOUTH && to == WEST) ||
+                    (direction == WEST && to == NORTH) -> turnRight()?.let { moveForward() }
 
             (direction == NORTH && to == WEST) ||
-                (direction == WEST && to == SOUTH) ||
-                (direction == SOUTH && to == EAST) ||
-                (direction == EAST && to == NORTH) -> turnLeft()?.let { moveForward() }
+                    (direction == WEST && to == SOUTH) ||
+                    (direction == SOUTH && to == EAST) ||
+                    (direction == EAST && to == NORTH) -> turnLeft()?.let { moveForward() }
 
             else -> moveForward()
         }
