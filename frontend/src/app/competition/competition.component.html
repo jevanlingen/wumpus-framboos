@@ -40,13 +40,14 @@
 
 @if (!isFinished) {
 <section class="game">
-    <h3>Game #{{competition()?.currentGameId}} ({{currentGameNumber
-        }} / {{numberOfGames}}) <button (click)="advance()">{{isFinalGame ? 'Finish' :
-            'Advance'}}</button></h3>
+    <div>
+        <h3>Game #{{gameInformation()?.name}} ({{currentGameNumber
+            }} / {{numberOfGames}}) <button (click)="advance()">{{isFinalGame ? 'Finish' :
+                'Advance'}}</button></h3>
 
-    @if(gameInformation(); as game){
-      >> Use game: {{game.name}}
-    <app-game-grid [game]="game" />
-    }
+        @if(gameInformation(); as game){
+        <app-game-grid [game]="game" />
+        }
+    </div>
 </section>
 }
