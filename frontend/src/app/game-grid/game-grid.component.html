@@ -3,8 +3,8 @@
     style="grid-template-columns: repeat({{_gridSize}}, 1fr); grid-template-rows: repeat({{_gridSize}}, 1fr); ">
 
     @for (item of _gridItems; track item.id) {
-    <div style="border: 1px solid #000; width: 100%; height: 100%; position: relative;" id="{{item.id}}">
-        <div style="display: flex; position: absolute; top: 20%; left: 20%; width: 60%; height: 60%">
+    <div class="cell" id="{{item.id}}">
+        <div class="cell-items">
             @if(item.wumpus){
             <app-wumpus />
             }
@@ -15,28 +15,12 @@
             <app-treasure />
             }
         </div>
-
-        <div id="north" style="position: absolute; top:0; height: 20%; width: 60%; margin: 0 20%;">
-            @for (player of item.players.north; track player.id) {
-            <app-avatar [trouserColor]="player.user.trouserColor" [skinColor]="player.user.skinColor" />
-            }
-        </div>
-        <div id="east" style="position: absolute; right:0; height: 60%; width: 20%; margin: 20% 0;">
-            @for (player of item.players.east; track player.id) {
-            <app-avatar style="transform:rotate(90deg); width: 30px;" [trouserColor]="player.user.trouserColor"
-                [skinColor]="player.user.skinColor" />
-            }
-        </div>
-        <div id="south" style="position: absolute; bottom:0; height: 20%; width: 60%; margin: 0 20%;">
-            @for (player of item.players.south; track player.id) {
-            <app-avatar style="transform:rotate(180deg); width: 30px;" [trouserColor]="player.user.trouserColor"
-                [skinColor]="player.user.skinColor" />
-            }
-        </div>
-        <div id="west" style="position: absolute; left:0; height: 60%; width: 20%; margin: 20% 0;">
-            @for (player of item.players.west; track player.id) {
-            <app-avatar style="transform:rotate(270deg); width: 30px;" [trouserColor]="player.user.trouserColor"
-                [skinColor]="player.user.skinColor" />
+        <div class="cell-players">
+            @for (player of item.players; track player.id) {
+                <app-avatar  
+                    [style]="'transform:rotate(' + getPlayerRotation(player) + 'deg);'"
+                    [trouserColor]="player.user.trouserColor" 
+                    [skinColor]="player.user.skinColor" />    
             }
         </div>
     </div>

@@ -30,36 +30,12 @@ export class GameGridComponent {
           y: game.gridSize - Math.floor(i / game.gridSize),
         }
 
-        const north: Array<Player> = [];
-        const east: Array<Player> = [];
-        const south: Array<Player> = [];
-        const west: Array<Player> = [];
-
-        game.players.filter(p => sameCoordinate(p.coordinate, c)).forEach(p => {
-          switch (p.direction) {
-            case 'NORTH':
-              north.push(p);
-              break;
-            case 'EAST':
-              east.push(p);
-              break;
-            case 'SOUTH':
-              south.push(p);
-              break;
-            case 'WEST':
-              west.push(p);
-              break;
-            default:
-              throw 'Not supported ' + p.direction;
-          }
-        });
-
         return {
           c,
           wumpus: sameCoordinate(game.wumpus.coordinate, c),
           treasure: sameCoordinate(game.treasure.coordinate, c),
           pit: game.pits.some(p => sameCoordinate(p.coordinate, c)),
-          players: {north, east, south, west},
+          players: game.players.filter(p => sameCoordinate(p.coordinate, c)),
           id: `${c.x}-${c.y}`
         }
       });
@@ -68,5 +44,17 @@ export class GameGridComponent {
   _gridSize: number = 0;
   _gridItems: Array<any> = [];
 
+  getPlayerRotation(player: Player): number{
+    switch(player.direction){
+      case 'EAST':
+        return 90;
+      case 'NORTH':
+        return 0;
+      case 'SOUTH':
+        return 180;
+      case 'WEST':
+        return 270;
+    }
+  }
 
 }
