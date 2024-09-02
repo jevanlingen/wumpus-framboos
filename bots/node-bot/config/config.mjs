@@ -1,5 +1,5 @@
 export const config = {
-  username: 'BaconBot4',
+  username: 'BaconBot',
   password: 'bacon1234',
   apiUrl: 'http://localhost:80',
   contentTypeHeaders: {

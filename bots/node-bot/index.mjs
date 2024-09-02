@@ -83,6 +83,11 @@ async function playGame(gameId) {
             }
 
             actions.push(...nextActions);
+        } else {
+            if (kb.gold === currentField) {
+                console.log('found gold', currentField);
+                actions = ['grab'];
+            }
         }
     }
 }
@@ -145,6 +150,8 @@ function getAdjacentFieldsWithDirection(currentField) {
 }
 
 function updateKnowledgeBaseBasedOnPerceptions(currentField, adjacentFields, state, knowledgeBase) {
+    console.log(currentField, state.perceptions);
+    
     if (state.perceptions.includes('STENCH')) {
         const probableFieldsWithWumpus = adjacentFields.filter(field => !knowledgeBase.notWumpus.includes(field));
         if (probableFieldsWithWumpus.length === 1) {
