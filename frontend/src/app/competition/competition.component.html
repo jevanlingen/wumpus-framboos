@@ -6,7 +6,9 @@
                 <th>#</th>
                 <th>Name</th>
                 <th>Avatar</th>
-                <th>Score</th>
+                @if(!isFinished){
+                    <th>Score</th>
+                }
                 <th>Total</th>
             </tr>
         </thead>
@@ -26,12 +28,14 @@
                     <app-treasure style="height: 20px;" />
                     }
                 </td>
-                <td>{{getGameUserState(score.userId)?.points}}</td>
+                @if(!isFinished){
+                    <td>{{getGameUserState(score.userId)?.points}}</td>
+                }
                 <td>{{score.points}}</td>
             </tr>
             } @empty {
             <tr>
-                <td colspan="3">No users in game</td>
+                <td [attr.colspan]="isFinished ? '4': '5'">No users in game</td>
             </tr>
             }
         </tbody>
