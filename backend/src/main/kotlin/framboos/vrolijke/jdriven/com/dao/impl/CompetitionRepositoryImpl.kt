@@ -1,8 +1,11 @@
 package framboos.vrolijke.jdriven.com.dao.impl
 
+import framboos.vrolijke.jdriven.com.Mode.CONTEST
+import framboos.vrolijke.jdriven.com.Mode.HACKING
 import framboos.vrolijke.jdriven.com.dao.CompetitionRepository
 import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton.dbQuery
 import framboos.vrolijke.jdriven.com.dao.model.*
+import framboos.vrolijke.jdriven.com.MODE
 import framboos.vrolijke.jdriven.com.utils.exists
 import framboos.vrolijke.jdriven.com.utils.getNextOrNull
 import org.jetbrains.exposed.sql.ResultRow
@@ -17,7 +20,10 @@ class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions),
     )
 
     override suspend fun create() = dbQuery {
-        val games = gameRepo.all().shuffled().sortedBy { it.gridSize }
+        val games = when (MODE) {
+            HACKING -> gameRepo.all().shuffled().sortedBy { it.gridSize }
+            CONTEST -> gameRepo.all()
+        }
         val gameIds = games.map { it.id }
         Competitions.insert {
             it[currentGameId] = gameIds.first()

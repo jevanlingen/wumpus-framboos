@@ -1,9 +1,12 @@
 package framboos.vrolijke.jdriven.com.dao
 
+import framboos.vrolijke.jdriven.com.Mode.CONTEST
+import framboos.vrolijke.jdriven.com.Mode.HACKING
 import framboos.vrolijke.jdriven.com.dao.impl.competitionRepo
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
 import framboos.vrolijke.jdriven.com.dao.model.*
+import framboos.vrolijke.jdriven.com.MODE
 import kotlinx.coroutines.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.*
@@ -36,7 +39,10 @@ object DatabaseSingleton {
     private suspend fun initDefaultEntities() {
         if (userRepo.all().none { it.admin }) createAdminUser()
         if (gameRepo.all().isEmpty()) {
-            createGames()
+            when (MODE) {
+                HACKING -> createGames()
+                CONTEST -> createGamesForContest()
+            }
             competitionRepo.create()
         }
     }
