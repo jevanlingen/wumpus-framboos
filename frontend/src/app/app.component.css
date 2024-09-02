@@ -15,5 +15,6 @@ nav {
 main {
   padding: 1em;
   background-image: url("/bg-with-gold.webp");
+  background-size: cover;
   flex-grow: 1;
 }
