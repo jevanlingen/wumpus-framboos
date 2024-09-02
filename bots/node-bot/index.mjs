@@ -5,17 +5,18 @@ import { doGameAction, getCompetition, getCompetitionIds, getGame, getGameIds, r
 // const GAME_ACTIONS = ['enter', 'turn-left', 'turn-right', 'move-forward', 'grab', 'shoot', 'climb', 'restart'];
 async function playGame(gameId) {
 
-    const gameInfo = await getGame(gameId);    
-    // would be nice if you call start that it should restart at 1,1.
+    const gameInfo = await getGame(gameId);
 
     //knowledge base
     const kb = {
         gridSize: gameInfo.gridSize,
         visited: [],
         pits: [],
-        notPits: ['1,1'],
+        possiblePits: new Set([]),
+        notPits: new Set(['1,1']),
         wumpus: undefined,
         wumpusDead: false,
+        possibleWumpus: [],
         notWumpus: ['1,1'],
         gold: undefined,
         okFields: [],
@@ -32,6 +33,12 @@ async function playGame(gameId) {
             return;
         }
         const currentField = `${state.coordinate.x},${state.coordinate.y}`;
+
+        if (nextAction === 'enter' && currentField !== '1,1') {
+            // logic can only work when starting from 1,1
+            actions = ['restart'];
+            continue;
+        }
         const adjacentFields = getAdjacentFieldsForCoordinate(state.coordinate, kb.gridSize);
 
         // infer knowledge
@@ -43,7 +50,7 @@ async function playGame(gameId) {
             kb.okFields = [];
             kb.notVisitedOKFields = [];
             kb.notWumpus.forEach(field => {
-                if (kb.notPits.includes(field)) {
+                if (kb.notPits.has(field)) {
                     // OK field
                     kb.okFields.push(field);
                     if (!kb.visited.includes(field)) {
@@ -84,7 +91,7 @@ async function playGame(gameId) {
 
             actions.push(...nextActions);
         } else {
-            if (kb.gold === currentField) {
+            if (kb.gold === currentField && !state.hasTreasure) {
                 console.log('found gold', currentField);
                 actions = ['grab'];
             }
@@ -150,13 +157,8 @@ function getAdjacentFieldsWithDirection(currentField) {
 }
 
 function updateKnowledgeBaseBasedOnPerceptions(currentField, adjacentFields, state, knowledgeBase) {
-    console.log(currentField, state.perceptions);
-    
     if (state.perceptions.includes('STENCH')) {
-        const probableFieldsWithWumpus = adjacentFields.filter(field => !knowledgeBase.notWumpus.includes(field));
-        if (probableFieldsWithWumpus.length === 1) {
-            knowledgeBase.wumpus = probableFieldsWithWumpus[0];
-        }
+        updateWumpusRelatedKnowledge(adjacentFields, knowledgeBase);
     } else {
         adjacentFields
             .filter(a => !knowledgeBase.notWumpus.includes(a))
@@ -164,14 +166,9 @@ function updateKnowledgeBaseBasedOnPerceptions(currentField, adjacentFields, sta
     }
 
     if (state.perceptions.includes('BREEZE')) {
-        const probableFieldsWithPits = adjacentFields.filter(field => !knowledgeBase.notPits.includes(field));
-        if (probableFieldsWithPits.length === 1 && !knowledgeBase.pits.includes(probableFieldsWithPits[0])) {
-            knowledgeBase.pits.push(probableFieldsWithPits[0]);
-        }
+        updatePitRelatedKnowledge(adjacentFields, knowledgeBase);
     } else {
-        adjacentFields
-            .filter(a => !knowledgeBase.notPits.includes(a))
-            .forEach(a => knowledgeBase.notPits.push(a));
+        adjacentFields.forEach(a => knowledgeBase.notPits.add(a));
     }
 
     if (state.perceptions.includes('GLITTER')) {
@@ -179,6 +176,80 @@ function updateKnowledgeBaseBasedOnPerceptions(currentField, adjacentFields, sta
     }
     if (state.perceptions.includes('SCREAM')) {
         knowledgeBase.wumpusDead = true;
+    }
+}
+
+function updatePitRelatedKnowledge(adjacentFields, knowledgeBase) {
+    if(adjacentFields.some(field => knowledgeBase.pits.includes(field))){
+        // pit already found. add other adjacent fields to notPits.
+        adjacentFields
+                .filter(a => !knowledgeBase.pits.includes(a))
+                .forEach(a => {
+                    knowledgeBase.notPits.add(a);
+                    knowledgeBase.possiblePits.delete(a);
+                });
+    }
+
+
+    const probableFieldsWithPits = adjacentFields.filter(field => !knowledgeBase.notPits.has(field));
+    if (probableFieldsWithPits.length === 1 && !knowledgeBase.pits.includes(probableFieldsWithPits[0])) {
+        knowledgeBase.pits.push(probableFieldsWithPits[0]);
+    } else if (probableFieldsWithPits.length > 1) {
+        let foundPit = false;
+
+        if (knowledgeBase.possiblePits.size) {
+            // If one of the adjacent fields is already marked as a possible pit-field, we deduce that it is a pit-field.
+            for (const pfwp of probableFieldsWithPits) {
+                console.log(pfwp, knowledgeBase.possiblePits, knowledgeBase.possiblePits.has(pfwp));
+                
+                if (knowledgeBase.possiblePits.has(pfwp)) {
+                    knowledgeBase.pits.push(pfwp);
+                    foundPit = true;
+                    break;
+                }
+            }
+        }
+        if (foundPit) {
+            // assuming that a breeze only relates exactly 1 adjacent field, we can conclude that the other adjacent fields are not pits.
+            adjacentFields
+                .filter(a => !knowledgeBase.pits.includes(a))
+                .forEach(a => knowledgeBase.notPits.add(a));
+        } else {
+            // add all probableFieldsWithPits to possiblePits
+            for (const pfwp of probableFieldsWithPits) {
+                knowledgeBase.possiblePits.add(pfwp);
+            }
+        }
+    }
+}
+
+function updateWumpusRelatedKnowledge(adjacentFields, knowledgeBase) {
+    const probableFieldsWithWumpus = adjacentFields.filter(field => !knowledgeBase.notWumpus.includes(field));
+    if (probableFieldsWithWumpus.length === 1) {
+        knowledgeBase.wumpus = probableFieldsWithWumpus[0];
+    } else {
+        if (knowledgeBase.possibleWumpus.length) {
+            for (const pfww of probableFieldsWithWumpus) {
+                if (knowledgeBase.possibleWumpus.includes(pfww)) {
+                    knowledgeBase.wumpus = pfww;
+                    break;
+                }
+            }
+        } else {
+            knowledgeBase.possibleWumpus = probableFieldsWithWumpus;
+        }
+    }
+
+    if (knowledgeBase.wumpus) {
+        // the wumpus is found, add other adjacent fields to notWumpus list
+        adjacentFields
+            .filter(a => knowledgeBase.wumpus !== a && !knowledgeBase.notWumpus.includes(a))
+            .forEach(a => knowledgeBase.notWumpus.push(a));
+
+        // also add the possibleWumpus fields to the notWumpus list
+        knowledgeBase.possibleWumpus
+            .filter(a => knowledgeBase.wumpus !== a && !knowledgeBase.notWumpus.includes(a))
+            .forEach(a => knowledgeBase.notWumpus.push(a));
     }
 }
 
