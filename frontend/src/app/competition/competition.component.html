@@ -41,7 +41,7 @@
 @if (!isFinished) {
 <section class="game">
     <div>
-        <h3>Game #{{gameInformation()?.name}} ({{currentGameNumber
+        <h3 id="game-header">{{gameInformation()?.name}} ({{currentGameNumber
             }} / {{numberOfGames}}) <button (click)="advance()">{{isFinalGame ? 'Finish' :
                 'Advance'}}</button></h3>
 
