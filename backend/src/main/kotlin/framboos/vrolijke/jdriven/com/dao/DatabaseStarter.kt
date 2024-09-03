@@ -50,9 +50,5 @@ internal suspend fun createGamesForContest() = dbQuery {
     gameRepo.create(name = "The Dark Descent", gridSize = 5, treasure = xy(5, 5), wumpus = xy(4, 4), pits = listOf(xy(2, 2), xy(3, 3)))
     gameRepo.create(name = "Maze of Forsaken Beauty", gridSize = 6, treasure = xy(4,6), wumpus = xy(3, 1), pits = listOf(xy(2, 3), xy(5, 4), xy(2, 5)))
     gameRepo.create(name = "The Lost Cavern of Wonders", gridSize = 6, treasure = xy(6,5), wumpus = xy(3, 1), pits = listOf(xy(3, 5), xy(2, 2), xy(4, 3), xy(6, 3)))
-    gameRepo.create(name = "The Hunter's Last Stand", gridSize = 7, treasure = xy(1,6), wumpus = xy(3,6),
-        pits = listOf(
-            xy(1, 3), xy(2, 3), xy(3, 3), xy(4, 3), xy(4, 4),
-            xy(6, 1), xy(6, 2), xy(6, 3), xy(6, 4), xy(6, 5), xy(6, 6),
-        ))
+    gameRepo.create(name = "The Hunter's Last Stand", gridSize = 7, treasure = xy(1,6), wumpus = xy(3,6), pits = listOf(xy(1, 3), xy(2, 3), xy(3, 3), xy(4, 3), xy(5, 4),  xy(5, 5), xy(7, 1)))
 }
