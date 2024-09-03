@@ -12,11 +12,18 @@
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     background: #333;
     opacity: 95%;
+    display: flex;
+    flex-flow: column;
+    max-height: 85vh;
 
-    >thead>tr {
-        background: #222;
-        color: rgb(200, 210, 62);
-        text-align: left;
+    thead{
+        flex: 0 0 auto;
+
+        >tr{
+            background: #222;
+            color: rgb(200, 210, 62);
+            text-align: left;
+        }
     }
 
     th,
@@ -29,7 +36,18 @@
 
     }
 
+    tr {
+        width: 100%;
+        display: table;
+        table-layout: fixed;
+    }
+
     tbody {
+        flex: 1 1 auto;
+        display: block;
+        overflow-y: auto;
+        overflow-x: hidden;
+
         tr {
             border-bottom: 1px solid #222;
         }
