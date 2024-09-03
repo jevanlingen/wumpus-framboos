@@ -125,6 +125,7 @@ components:
   schemas:
     Action:
       type: string
+      description: "Available actions in the Wumpus World."
       enum:
         - enter
         - restart
@@ -136,15 +137,19 @@ components:
         - climb
     Competition:
       type: "object"
+      description: "Details about a competition."
       properties:
         id:
           type: "integer"
           format: "int32"
+          description: "Unique identifier for the competition."
         currentGameId:
           type: "integer"
           format: "int32"
+          description: "ID of the currently active game."
         gameIds:
           type: "array"
+          description: "List of game IDs associated with the competition."
           items:
             type: "integer"
             format: "int32"
@@ -152,43 +157,58 @@ components:
         - "gameIds"
     CreateUser:
       type: "object"
+      description: "Payload for creating a new user."
       properties:
         name:
           type: "string"
+          description: "The name of the user."
         password:
           type: "string"
+          description: "The password for the user."
       required:
         - "name"
     Game:
       type: "object"
+      description: "Details about a game in the Wumpus World."
       properties:
         id:
           type: "integer"
           format: "int32"
+          description: "Unique identifier for the game."
         gridSize:
           type: "integer"
           format: "int32"
+          description: "The size of the grid in the game."
         pits:
           type: "integer"
           format: "int32"
+          description: "The number of pits in the game."
     User:
       type: "object"
+      description: "Information about a user."
       properties:
         id:
           type: "integer"
           format: "int32"
+          description: "Unique identifier for the user."
         name:
           type: "string"
+          description: "The name of the user."
         password:
           type: "string"
+          description: "The user's password."
         admin:
           type: "boolean"
+          description: "Indicates if the user has admin privileges."
         shirtColor:
           type: "string"
+          description: "The color of the user's shirt."
         trouserColor:
           type: "string"
+          description: "The color of the user's trousers."
         skinColor:
           type: "string"
+          description: "The user's skin color."
       required:
         - "name"
         - "shirtColor"
@@ -196,24 +216,31 @@ components:
         - "skinColor"
     Coordinate:
       type: "object"
+      description: "Coordinates within the Wumpus World grid."
       properties:
         x:
           type: "integer"
           format: "int32"
-        "y":
+          description: "The X-coordinate."
+        y:
           type: "integer"
           format: "int32"
+          description: "The Y-coordinate."
     Player:
       type: "object"
+      description: "Details about a player in the Wumpus World."
       properties:
         id:
           type: "integer"
           format: "int32"
+          description: "Unique identifier for the player."
         user:
           $ref: "#/components/schemas/User"
+          description: "Reference to the user associated with this player."
         gameId:
           type: "integer"
           format: "int32"
+          description: "ID of the game the player is participating in."
         direction:
           type: "string"
           enum:
@@ -221,6 +248,7 @@ components:
             - "EAST"
             - "SOUTH"
             - "WEST"
+          description: "The direction the player is facing."
         perceptions:
           type: "array"
           items:
@@ -232,25 +260,34 @@ components:
               - "BUMP"
               - "SCREAM"
               - "LADDER"
+          description: "List of current perceptions of the player."
         coordinate:
           $ref: "#/components/schemas/Coordinate"
+          description: "The current coordinates of the player."
         points:
           type: "integer"
           format: "int32"
+          description: "The points accumulated by the player."
         arrows:
           type: "integer"
           format: "int32"
+          description: "The number of arrows the player has left."
         planks:
           type: "integer"
           format: "int32"
+          description: "The number of planks the player has."
         wumpusAlive:
           type: "boolean"
+          description: "Indicates if the Wumpus is still alive."
         hasTreasure:
           type: "boolean"
+          description: "Indicates if the player has found the treasure."
         gameCompleted:
           type: "boolean"
+          description: "Indicates if the player has completed the game."
         death:
           type: "boolean"
+          description: "Indicates if the player is dead."
       required:
         - "direction"
         - "perceptions"
