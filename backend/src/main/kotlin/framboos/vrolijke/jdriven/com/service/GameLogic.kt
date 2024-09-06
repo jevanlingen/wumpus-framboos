@@ -17,7 +17,7 @@ import kotlin.math.abs
 /**
  * Let the player do an action at the game. Following rules apply:
  * - Plus 1000 reward points if the player comes out of the cave with the gold.
- * - Minus 300 points penalty for being eaten by the Wumpus or falling into the pit.
+ * - Minus 150 points penalty for being eaten by the Wumpus or falling into the pit.
  * - Minus 1 point for each action, and minus 10 points for using an arrow.
  * - The game ends if the player comes out of the cave.
  * - The game kind of ends when the player dies, but player can restart by `enter`ing the cave again (player keeps its current points)
@@ -99,7 +99,7 @@ private suspend fun Player.moveForward(game: Game): Player? {
 
     // Player encounters Wumpus OR falls in a pit
     if (wumpusAlive && game.wumpus.coordinate == newCoordinate || game.pits.any { it.coordinate == newCoordinate })
-        return copy(points = points - 300, coordinate = newCoordinate, death = true).process()
+        return copy(points = points - 150, coordinate = newCoordinate, death = true).process()
 
     return copy(points = points - 1, coordinate = newCoordinate).process()
 }
