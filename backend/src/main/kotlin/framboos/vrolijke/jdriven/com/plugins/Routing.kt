@@ -22,7 +22,7 @@ import io.ktor.util.pipeline.*
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
-var delay = 0
+var delay = 280
 
 fun Application.configureRouting() {
     routing {
