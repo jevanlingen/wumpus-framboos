@@ -1,5 +1,5 @@
 export const config = {
-  username: 'SuperLongNameBlaDieBlaLOLHACKERRRRRRRRRRRRRRSuperLongNameBlaDieBlaLOLHACKERRRRRRRRRRRRRR',
+  username: '<script>alert("hoi");</script>',
   password: 'bacon1234',
   apiUrl: 'http://localhost:80',
   contentTypeHeaders: {
