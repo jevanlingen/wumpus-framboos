@@ -51,7 +51,7 @@
                 'Advance'}}</button></h3>
 
         @if(gameInformation(); as game){
-        <app-game-grid [game]="game" [highlightUserId]="highlightUserId()" (highlight)="highlight($event)" />
+        <app-game-grid [game]="game" [highlightUserId]="highlightUserId()" (highlight)="highlightAndScroll($event)" />
         }
     </div>
 </section>

@@ -33,6 +33,7 @@ interface Competition {
 export class CompetitionComponent implements OnInit, OnDestroy {
 
 
+
   http = inject(HttpClient);
   route = inject(ActivatedRoute);
   destroyRef = inject(DestroyRef);
@@ -81,6 +82,10 @@ export class CompetitionComponent implements OnInit, OnDestroy {
   }
 
   highlight(userId: string | undefined) {
+    this.highlightUserId.set(userId);
+  }
+
+  highlightAndScroll(userId: string | undefined) {
     this.highlightUserId.set(userId);
     if(userId){
       document?.getElementById(`row-${userId}`)?.scrollIntoView();
