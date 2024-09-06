@@ -1,7 +1,7 @@
 export const config = {
   username: 'Mike Hunt',
   password: 'bacon1234',
-  apiUrl: 'http://localhost:80',
+  apiUrl: 'http://vrolijke.framboos',
   contentTypeHeaders: {
     "content-type": "application/json"
   },

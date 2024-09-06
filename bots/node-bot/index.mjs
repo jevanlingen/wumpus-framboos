@@ -1,5 +1,5 @@
 import { doGameAction, getCompetition, getCompetitionIds, getGame, getGameIds, register } from "./scripts/api.mjs";
-
+import { aStar } from "./scripts/a-star.mjs";
 
 // type Perception = 'LADDER' | 'STENCH' | 'BREEZE' | 'GLITTER' | 'BUMP' | 'SCREAM';
 // const GAME_ACTIONS = ['enter', 'turn-left', 'turn-right', 'move-forward', 'grab', 'shoot', 'climb', 'restart'];
@@ -99,61 +99,11 @@ async function playGame(gameId) {
     }
 }
 
-function getActionsToGetToField(currentField, currentDirection, goalField, allowedFields, actions) {
-    if (!actions) {
-        actions = [];
-    }
-    if (currentField === goalField) {
-        return actions;
-    }
-
-    const adjacentFields = getAdjacentFieldsWithDirection(currentField).filter(a => allowedFields.includes(a[0]));
-
-    if (adjacentFields.length === 0) {
-        return undefined;
-    }
-
-    const paths = [];
-    for (let field of adjacentFields) {
-        paths.push(getActionsToGetToField(
-            field[0],
-            field[1],
-            goalField,
-            allowedFields.filter(a => a != field[0]),
-            [...actions, ...getTurnActions(currentDirection, field[1]), 'move-forward']
-        ));
-    }
-
-    return paths.filter(p => !!p).sort()?.[0];
-}
-
-function getTurnActions(currentDirection, newDirection) {
-    if (currentDirection === newDirection) {
-        return [];
-    } else if (
-        (currentDirection === 'NORTH' && newDirection == 'SOUTH') ||
-        (currentDirection === 'EAST' && newDirection == 'WEST') ||
-        (currentDirection === 'SOUTH' && newDirection == 'NORTH') ||
-        (currentDirection === 'WEST' && newDirection == 'EAST')
-    ) {
-        return ['turn-left', 'turn-left'];
-    } else if (
-        (currentDirection === 'NORTH' && newDirection == 'EAST') ||
-        (currentDirection === 'EAST' && newDirection == 'SOUTH') ||
-        (currentDirection === 'SOUTH' && newDirection == 'WEST') ||
-        (currentDirection === 'WEST' && newDirection == 'NORTH')
-    ) {
-        return ['turn-right'];
-    } else {
-        return ['turn-left'];
-    }
-}
-
-function getAdjacentFieldsWithDirection(currentField) {
-    const [x, y] = currentField.split(',').map(i => parseInt(i));
-    return [
-        [`${x + 1},${y}`, 'EAST'], [`${x - 1},${y}`, 'WEST'], [`${x},${y + 1}`, 'NORTH'], [`${x},${y - 1}`, 'SOUTH']
-    ];
+function getActionsToGetToField(currentField, currentDirection, goalField, allowedFields) {
+    const { path, actions } = aStar(currentField, goalField, currentDirection, allowedFields);
+    console.log(currentField, goalField, currentDirection, path, actions);
+    
+    return actions;
 }
 
 function updateKnowledgeBaseBasedOnPerceptions(currentField, adjacentFields, state, knowledgeBase) {
@@ -180,14 +130,14 @@ function updateKnowledgeBaseBasedOnPerceptions(currentField, adjacentFields, sta
 }
 
 function updatePitRelatedKnowledge(adjacentFields, knowledgeBase) {
-    if(adjacentFields.some(field => knowledgeBase.pits.includes(field))){
+    if (adjacentFields.some(field => knowledgeBase.pits.includes(field))) {
         // pit already found. add other adjacent fields to notPits.
         adjacentFields
-                .filter(a => !knowledgeBase.pits.includes(a))
-                .forEach(a => {
-                    knowledgeBase.notPits.add(a);
-                    knowledgeBase.possiblePits.delete(a);
-                });
+            .filter(a => !knowledgeBase.pits.includes(a))
+            .forEach(a => {
+                knowledgeBase.notPits.add(a);
+                knowledgeBase.possiblePits.delete(a);
+            });
     }
 
 
@@ -201,7 +151,7 @@ function updatePitRelatedKnowledge(adjacentFields, knowledgeBase) {
             // If one of the adjacent fields is already marked as a possible pit-field, we deduce that it is a pit-field.
             for (const pfwp of probableFieldsWithPits) {
                 console.log(pfwp, knowledgeBase.possiblePits, knowledgeBase.possiblePits.has(pfwp));
-                
+
                 if (knowledgeBase.possiblePits.has(pfwp)) {
                     knowledgeBase.pits.push(pfwp);
                     foundPit = true;
