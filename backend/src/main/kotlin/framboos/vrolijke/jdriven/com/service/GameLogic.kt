@@ -33,7 +33,8 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Play
     }
 
     if (player == null) return failure(PlayerNotRegisteredException())
-    if (action == "restart") startAgain(player)
+    if (action == "restart") { player = startAgain(player) }
+    if (player == null) return failure(PlayerNotRegisteredException()) // ugly fix for now, restart makes player nullable again
     if (player.death || player.gameCompleted) return success(player)
 
     return when (action) {
