@@ -13,7 +13,7 @@ value class Color private constructor(
     companion object {
         fun random() = Color(randomColorHex() + randomColorHex() + randomColorHex())
 
-        fun randomSkinColor() = Color(listOf("FFE0C4", "EECFB4", "DEAB7F", "BE723C", "724000", "5B0000").random())
+        fun randomSkinColor() = Color(listOf("FFFFFF", "FFFF00", "FFE0C4", "EECFB4", "DEAB7F", "BE723C").random())
 
         operator fun invoke(value: String) =
             if (hexColorRegex.matches(value)) Color(value) else throw IllegalArgumentException("$value is not a valid color")
