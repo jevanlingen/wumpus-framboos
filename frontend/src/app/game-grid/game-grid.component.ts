@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Coordinate, Game, Player } from './../../model/game';
 import { AvatarComponent } from "../avatar/avatar.component";
 import { WumpusComponent } from "./wumpus/wumpus.component";
@@ -18,6 +18,7 @@ function sameCoordinate(c1: Coordinate, c2: Coordinate) {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GameGridComponent {
+
   @Input({ required: true })
   set game(game: Game) {
     this._gridSize = game.gridSize;
@@ -41,6 +42,7 @@ export class GameGridComponent {
       });
   }
   @Input() highlightUserId: string | undefined = undefined;
+  @Output() highlight = new EventEmitter<string | undefined>(); 
 
   _gridSize: number = 0;
   _gridItems: Array<any> = [];

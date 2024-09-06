@@ -14,7 +14,7 @@
         </thead>
         <tbody>
             @for (score of sortedScores(); track score.username; let idx = $index;) {
-            <tr (mouseenter)="highlight(score.userId)" (mouseleave)="highlight(undefined)" [class.highlighted]="highlightUserId() === score.userId">
+            <tr [id]="'row-' + score.userId" (mouseenter)="highlight(score.userId)" (mouseleave)="highlight(undefined)" [class.highlighted]="highlightUserId() === score.userId">
                 <td width="5%">{{idx + 1}}</td>
                 <td style="width: 30%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                     {{score.username}}</td>
@@ -51,7 +51,7 @@
                 'Advance'}}</button></h3>
 
         @if(gameInformation(); as game){
-        <app-game-grid [game]="game" [highlightUserId]="highlightUserId()" />
+        <app-game-grid [game]="game" [highlightUserId]="highlightUserId()" (highlight)="highlight($event)" />
         }
     </div>
 </section>

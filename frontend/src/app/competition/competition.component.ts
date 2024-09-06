@@ -81,7 +81,10 @@ export class CompetitionComponent implements OnInit, OnDestroy {
   }
 
   highlight(userId: string | undefined) {
-    this.highlightUserId.set(userId)
+    this.highlightUserId.set(userId);
+    if(userId){
+      document?.getElementById(`row-${userId}`)?.scrollIntoView();
+    }
   }
 
   get currentGameNumber(): number {
