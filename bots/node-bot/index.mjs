@@ -79,7 +79,7 @@ async function playGame(gameId) {
                     nextActions = ['grab'];
                 } else {
                     console.log('next goal', `${currentField} -> ${kb.notVisitedOKFields[0]}`, kb.okFields, kb.notVisitedOKFields);
-                    nextActions = nextActions.concat(getActionsToGetToField(currentField, state.direction, kb.notVisitedOKFields[0], kb.okFields));
+                    nextActions = nextActions.concat(getActionsToGetToField(currentField, state.direction, kb.notVisitedOKFields[kb.notVisitedOKFields.length -1], kb.okFields));
                 }
             }
 
