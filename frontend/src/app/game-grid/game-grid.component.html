@@ -19,6 +19,7 @@
             @for (player of item.players; track player.id) {
                 <app-avatar 
                     [title]="player.user.name"
+                    [hover]="highlightUserId === player.user.id"
                     [style]="'transform:rotate(' + getPlayerRotation(player) + 'deg);'"
                     [trouserColor]="player.user.trouserColor" 
                     [skinColor]="player.user.skinColor" />    

@@ -32,6 +32,7 @@ interface Competition {
 })
 export class CompetitionComponent implements OnInit, OnDestroy {
 
+
   http = inject(HttpClient);
   route = inject(ActivatedRoute);
   destroyRef = inject(DestroyRef);
@@ -42,6 +43,7 @@ export class CompetitionComponent implements OnInit, OnDestroy {
   sortedScores: WritableSignal<Score[]> = signal([]);
   gameInformation: WritableSignal<Game | undefined> = signal(undefined);
   isFinished = false;
+  highlightUserId: WritableSignal<string | undefined> = signal(undefined);
   private competitionId!: any;
   private competitionTimeout?: any;
   private gameTimeout?: any;
@@ -76,6 +78,10 @@ export class CompetitionComponent implements OnInit, OnDestroy {
       .subscribe(_ => {
         this.getCompetition();
       });
+  }
+
+  highlight(userId: string | undefined) {
+    this.highlightUserId.set(userId)
   }
 
   get currentGameNumber(): number {

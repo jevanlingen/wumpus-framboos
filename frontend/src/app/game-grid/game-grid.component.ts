@@ -40,12 +40,13 @@ export class GameGridComponent {
         }
       });
   }
+  @Input() highlightUserId: string | undefined = undefined;
 
   _gridSize: number = 0;
   _gridItems: Array<any> = [];
 
-  getPlayerRotation(player: Player): number{
-    switch(player.direction){
+  getPlayerRotation(player: Player): number {
+    switch (player.direction) {
       case 'EAST':
         return 90;
       case 'NORTH':

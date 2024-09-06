@@ -7,16 +7,17 @@
                 <th style="width: 30%;">Name</th>
                 <th>Avatar</th>
                 @if(!isFinished){
-                    <th>Score</th>
+                <th>Score</th>
                 }
                 <th>Total</th>
             </tr>
         </thead>
         <tbody>
             @for (score of sortedScores(); track score.username; let idx = $index;) {
-            <tr>
+            <tr (mouseenter)="highlight(score.userId)" (mouseleave)="highlight(undefined)" [class.highlighted]="highlightUserId() === score.userId">
                 <td width="5%">{{idx + 1}}</td>
-                <td style="width: 30%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{score.username}}</td>
+                <td style="width: 30%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    {{score.username}}</td>
                 <td style="display: flex;">
                     <app-avatar [trouserColor]="score.trouserColor" [skinColor]="score.skinColor" />
 
@@ -29,7 +30,7 @@
                     }
                 </td>
                 @if(!isFinished){
-                    <td>{{getGameUserState(score.userId)?.points}}</td>
+                <td>{{getGameUserState(score.userId)?.points}}</td>
                 }
                 <td>{{score.points}}</td>
             </tr>
@@ -50,7 +51,7 @@
                 'Advance'}}</button></h3>
 
         @if(gameInformation(); as game){
-        <app-game-grid [game]="game" />
+        <app-game-grid [game]="game" [highlightUserId]="highlightUserId()" />
         }
     </div>
 </section>

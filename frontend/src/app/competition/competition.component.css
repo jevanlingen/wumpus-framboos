@@ -16,10 +16,10 @@
     flex-flow: column;
     max-height: 85vh;
 
-    thead{
+    thead {
         flex: 0 0 auto;
 
-        >tr{
+        >tr {
             background: #222;
             color: rgb(200, 210, 62);
             text-align: left;
@@ -59,6 +59,11 @@
         tr:last-of-type {
             border-bottom: 1px solid rgb(200, 210, 62);
         }
+
+        tr.highlighted {
+            background-color: rgba(200, 210, 62, .5) !important;
+            color: #000;
+        }
     }
 }
 
@@ -71,8 +76,8 @@
     align-items: center;
 
     h3 {
-      display: flex;
-      justify-content: space-between;
+        display: flex;
+        justify-content: space-between;
     }
 
     button {
