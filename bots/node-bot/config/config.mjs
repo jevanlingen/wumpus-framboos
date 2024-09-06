@@ -1,5 +1,5 @@
 export const config = {
-  username: 'Mike Hunt',
+  username: 'BaconBot',
   password: 'bacon1234',
   apiUrl: 'http://vrolijke.framboos',
   contentTypeHeaders: {
