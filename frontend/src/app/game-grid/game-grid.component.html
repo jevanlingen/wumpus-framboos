@@ -17,7 +17,8 @@
         </div>
         <div class="cell-players">
             @for (player of item.players; track player.id) {
-                <app-avatar  
+                <app-avatar 
+                    [title]="player.user.name"
                     [style]="'transform:rotate(' + getPlayerRotation(player) + 'deg);'"
                     [trouserColor]="player.user.trouserColor" 
                     [skinColor]="player.user.skinColor" />    
