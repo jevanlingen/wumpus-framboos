@@ -53,8 +53,8 @@ class CompetitionRepositoryImpl : ReadRepositoryImpl<Competition>(Competitions),
 
     override suspend fun advance(id: Int) = dbQuery {
         val competition = super.findById(id) ?: return@dbQuery true
-        val nextCurrentGame = competition.gameIds.getNextOrNull(competition.currentGameId) ?: return@dbQuery true
-
+        // get next game or set to -1 to finish the competition
+        val nextCurrentGame = competition.gameIds.getNextOrNull(competition.currentGameId) ?: -1
         Competitions.update({ Competitions.id eq id }) { it[currentGameId] = nextCurrentGame } > 0
     }
 }

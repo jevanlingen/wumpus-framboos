@@ -69,14 +69,13 @@ export class CompetitionComponent implements OnInit, OnDestroy {
   advance() {
     if (this.isFinalGame) {
       this.isFinished = true;
-    } else {
-      this.http
-        .post(`/api/competitions/${this.competitionId}/action/advance`, {})
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(_ => {
-          this.getCompetition();
-        });
     }
+    this.http
+      .post(`/api/competitions/${this.competitionId}/action/advance`, {})
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(_ => {
+        this.getCompetition();
+      });
   }
 
   get currentGameNumber(): number {
