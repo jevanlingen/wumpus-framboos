@@ -33,12 +33,11 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Play
     }
 
     if (player == null) return failure(PlayerNotRegisteredException())
-    if (action == "restart") { player = startAgain(player) }
-    if (player == null) return failure(PlayerNotRegisteredException()) // ugly fix for now, restart makes player nullable again
     if (player.death || player.gameCompleted) return success(player)
 
     return when (action) {
-        "enter", "restart" -> player // do nothing else
+        "enter" -> player // do nothing else
+        "restart" -> player.retry()
         "turn-left" -> player.turnLeft()
         "turn-right" -> player.turnRight()
         "move-forward" -> player.moveForward(game)
@@ -52,8 +51,14 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Play
         ?: failure(NotAnActionException(action))
 }
 
-private suspend fun startAgain(player: Player) =
-    player.copy(
+private suspend fun addPlayer(userId: Int, game: Game) =
+    playerRepo.add(CreatePlayer(userId, game.id, game.startingLocation))
+
+/**
+ * The player can go back to the starting coordinate point to try it again.
+ */
+private suspend fun Player.retry() =
+    copy(
         direction = EAST,
         coordinate = Coordinate(1, 1),
         arrows = 1,
@@ -63,14 +68,12 @@ private suspend fun startAgain(player: Player) =
         death = false
     ).process()
 
-private suspend fun addPlayer(userId: Int, game: Game) =
-    playerRepo.add(CreatePlayer(userId, game.id, game.startingLocation))
-
 /**
  * The player can turn left.
  */
 private suspend fun Player.turnLeft(): Player? {
-    val newDirection = if (direction == Direction.entries.first()) Direction.entries.last() else Direction.entries[direction.ordinal - 1]
+    val newDirection =
+        if (direction == Direction.entries.first()) Direction.entries.last() else Direction.entries[direction.ordinal - 1]
     return copy(points = points - 1, direction = newDirection).process()
 }
 
@@ -78,7 +81,8 @@ private suspend fun Player.turnLeft(): Player? {
  * The player can turn right.
  */
 private suspend fun Player.turnRight(): Player? {
-    val newDirection = if (direction == Direction.entries.last()) Direction.entries.first() else Direction.entries[direction.ordinal + 1]
+    val newDirection =
+        if (direction == Direction.entries.last()) Direction.entries.first() else Direction.entries[direction.ordinal + 1]
     return copy(points = points - 1, direction = newDirection).process()
 }
 
@@ -109,7 +113,7 @@ private suspend fun Player.moveForward(game: Game): Player? {
  */
 private suspend fun Player.grab(game: Game) =
     if (!hasTreasure && game.treasure.coordinate == coordinate)
-         copy(points = points - 1, hasTreasure = true).process()
+        copy(points = points - 1, hasTreasure = true).process()
     else
         copy(points = points - 1).process()
 
