@@ -1,7 +1,7 @@
 export const config = {
   username: 'BaconBot',
   password: 'bacon1234',
-  apiUrl: 'http://vrolijke.framboos',
+  apiUrl: 'http://localhost:80',
   contentTypeHeaders: {
     "content-type": "application/json"
   },
