@@ -35,7 +35,9 @@ Bots:
 # Just run from IntelliJ
 ```
 
-## Game
-The game exists of two parts a hacking/development phase and a contest phase. As an host, you need to manually change the mode if you want to go to phase 2, by stopping the application, changing  the mode to CONTEST (in Application.kt) and starting the application again. From that point, the overview interface for the players will no longer work nor can the admin calls be made from anywhere else than localhost. So the host needs to present its screen and show the game with `ng serve`.
+## Game night
+The game exists of two parts, a hacking/development phase and a contest phase. The first phase is meant for the players to learn the game and code a bot. The second phase is the competition, where players let their bots go through the levels without any more changes to their code. After all levels are completed the player with the most points wins the game.
+
+As an host, you need to manually change the mode if you want to go to contest phase, by stopping the application, changing the mode to CONTEST (in Application.kt) and starting the application again. You probably also want to remove the database to give each player a fresh start. Once the game is booted in CONTEST mode, the overview interface for the players will no longer work nor can the admin calls be made from anywhere else than localhost. So the host needs to present its screen and show the game with `ng serve`.
 
 _The reason for this complication is just to ensure that players do not cheat by using the admin password to retrieve game data._ 
