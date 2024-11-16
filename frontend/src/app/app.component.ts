@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, WritableSignal, inject, signal } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { isDevMode } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   http = inject(HttpClient);
+  isDevelopment = isDevMode();
 
   competitions: WritableSignal<Array<number>> = signal([]);
 

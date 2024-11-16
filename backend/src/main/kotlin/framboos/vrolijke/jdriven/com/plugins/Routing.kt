@@ -1,5 +1,7 @@
 package framboos.vrolijke.jdriven.com.plugins
 
+import framboos.vrolijke.jdriven.com.MODE
+import framboos.vrolijke.jdriven.com.Mode.HACKING
 import framboos.vrolijke.jdriven.com.dao.impl.competitionRepo
 import framboos.vrolijke.jdriven.com.dao.impl.gameRepo
 import framboos.vrolijke.jdriven.com.dao.impl.userRepo
@@ -71,7 +73,10 @@ fun Application.configureRouting() {
                 get("ids") { call.respond(competitionRepo.allIds()) }
             }
         }
-        staticResources("/", "static")
+
+        if (MODE == HACKING) {
+            staticResources("/", "static")
+        }
     }
 }
 

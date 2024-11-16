@@ -5,8 +5,10 @@
       <a [routerLink]="'/competitions/' + c">{{c}}</a>
     }
   </div>
-  
-  <a class="admin" routerLink="/admin">Admin</a>
+
+  @if (isDevelopment) {
+    <a class="admin" routerLink="/admin">Admin</a>
+  }
 </nav>
 <main>
   <router-outlet />

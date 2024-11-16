@@ -1,7 +1,6 @@
 package framboos.vrolijke.jdriven.com
 
 import framboos.vrolijke.jdriven.com.Mode.HACKING
-import framboos.vrolijke.jdriven.com.Mode.CONTEST
 import framboos.vrolijke.jdriven.com.dao.DatabaseSingleton
 import framboos.vrolijke.jdriven.com.plugins.*
 import io.ktor.server.application.*
@@ -12,7 +11,7 @@ enum class Mode {
     HACKING, CONTEST
 }
 
-val MODE = CONTEST
+val MODE = HACKING
 
 fun main() {
     embeddedServer(Netty, host = "0.0.0.0", port = 80, module = Application::module)
