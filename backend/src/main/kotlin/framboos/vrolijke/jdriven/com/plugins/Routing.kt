@@ -53,7 +53,7 @@ fun Application.configureRouting() {
                 get("{id}") {
                     val game = getId()?.let { gameRepo.findById(it) }?.let {
                         when {
-                            role() == ADMIN && call.isLocal() -> it
+                            role() == ADMIN && (call.isLocal() || MODE == HACKING) -> it
                             else -> GameForPlayer(it.id, it.gridSize, it.pits.size)
                         }
                     }
@@ -65,7 +65,7 @@ fun Application.configureRouting() {
                 get("{id}") {
                     val competition =
                         when {
-                            role() == ADMIN && call.isLocal() -> getId()?.let { competitionRepo.findByIdWithScore(it) }
+                            role() == ADMIN && (call.isLocal() || MODE == HACKING) -> getId()?.let { competitionRepo.findByIdWithScore(it) }
                             else -> getId()?.let { competitionRepo.findById(it) }
                         }
                     if (competition == null) call.respond(BadRequest) else call.respond(competition)
