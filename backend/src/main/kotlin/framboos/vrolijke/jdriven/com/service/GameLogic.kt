@@ -20,7 +20,7 @@ import kotlin.math.abs
  * - Minus 150 points penalty for being eaten by the Wumpus or falling into the pit.
  * - Minus 1 point for each action, and minus 10 points for using an arrow.
  * - The game ends if the player comes out of the cave.
- * - The game kind of ends when the player dies, but player can restart by `enter`ing the cave again (player keeps its current points)
+ * - The game kind of ends when the player dies, but player can restart to try again (player keeps its current points)
  */
 suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Player> {
     var (game, player) = retrieveData(gameId, userId)
@@ -33,7 +33,7 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Play
     }
 
     if (player == null) return failure(PlayerNotRegisteredException())
-    if (player.death || player.gameCompleted) return success(player)
+    if ((player.death && action != "restart") || player.gameCompleted) return success(player)
 
     return when (action) {
         "enter" -> player // do nothing else
@@ -42,7 +42,7 @@ suspend fun doGameAction(gameId: Int, action: String?, userId: Int): Result<Play
         "turn-right" -> player.turnRight()
         "move-forward" -> player.moveForward(game)
         "grab" -> player.grab(game)
-        // "release" -> TODO() // it can release an object that it is holding; I don't see o need to implement this for now
+        // "release" -> TODO() // release a captured object; I don't see o need to implement this for now
         "shoot" -> player.shoot(game)
         "climb" -> player.climb(game)
         else -> null
