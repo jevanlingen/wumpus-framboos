@@ -21,7 +21,7 @@ Frontend:
 > ng serve
 ```
 
-You can also run the `./build-frontend` command to give the players the option to see the overview interface. The `advance` and `admin` button will not be available for them.
+You can also run the `./build-frontend` command to give the players the option to see the overview interface. The `advance` and `admin` buttons will not be available for them.
 
 Bots:
 ```shell
