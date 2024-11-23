@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, DestroyRef, OnDestroy, OnInit, WritableSignal, computed, effect, inject, signal } from '@angular/core';
+import { Component, DestroyRef, OnDestroy, OnInit, WritableSignal, computed, effect, inject, signal, isDevMode } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -31,12 +31,10 @@ interface Competition {
   imports: [GameGridComponent, AvatarComponent, TreasureComponent]
 })
 export class CompetitionComponent implements OnInit, OnDestroy {
-
-
-
   http = inject(HttpClient);
   route = inject(ActivatedRoute);
   destroyRef = inject(DestroyRef);
+  isDevelopment = isDevMode();
   private refreshRate = 150;
 
   competition: WritableSignal<Competition | undefined> = signal(undefined);
